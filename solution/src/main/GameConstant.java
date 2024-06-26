@@ -1,11 +1,18 @@
+
+
+/**
+ *
+ *
+ */
 public enum GameConstant {
     TABLE_WIDTH(11),
-    TABLE_HEIGHT(10);
+    TABLE_HEIGHT(11),
+    CELL_SIZE(60);          //gap size
 
 
 
 
-    private int value;
+    private final int value;
 
     GameConstant(int value) {
         this.value = value;
