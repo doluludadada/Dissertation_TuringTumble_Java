@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Path2D;
 
 
 /**
@@ -13,6 +12,8 @@ public class GameTable extends JPanel implements MouseListener {
     private static final int TABLE_WIDTH = GameConstant.TABLE_WIDTH.getValue();
     private static final int TABLE_HEIGHT = GameConstant.TABLE_HEIGHT.getValue();
     private static final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
+    private static final int STORAGE_HEIGHT = 2 * GameConstant.CELL_SIZE.getValue();;
+    private static final int BOTTOM_HEIGHT = GameConstant.CELL_SIZE.getValue();;
 
 
     public GameTable() {
@@ -27,29 +28,59 @@ public class GameTable extends JPanel implements MouseListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        drawGrid(g2d);
-        drawStorage(g2d);
+        drawUpSide(g2d);
+        drawTable(g2d);
         drawBottomArea(g2d);
     }
 
-    private void drawGrid(Graphics2D g) {
+    private void drawUpSide(Graphics2D g) {
 
-        //
+        g.setStroke(new BasicStroke(3));
+        g.setColor(Color.BLACK);
+        int upSideY = STORAGE_HEIGHT - CELL_SIZE / 2;
+        int centreX = (TABLE_WIDTH * CELL_SIZE) / 2;
+
+        // Draw connecting lines (5 lines total)
+        // Centre vertical line
+        g.drawLine(centreX, 0, centreX, STORAGE_HEIGHT / 3);
+
+        // Left diagonal line
+        g.drawLine(centreX, STORAGE_HEIGHT / 3, CELL_SIZE * 3, upSideY);
+        g.drawLine(0, upSideY, CELL_SIZE * 3, upSideY);
+
+
+        // Right horizontal line
+        g.drawLine(TABLE_WIDTH * CELL_SIZE - CELL_SIZE * 3, upSideY, TABLE_WIDTH * CELL_SIZE, upSideY);
+        g.drawLine(centreX, STORAGE_HEIGHT / 3, TABLE_WIDTH * CELL_SIZE - CELL_SIZE * 3, upSideY);
+
+        // Draw two red circles
+        g.setColor(Color.RED);
+        int circleSize = 30;
+        g.fillOval(CELL_SIZE * 3 - circleSize/2, upSideY - circleSize/2, circleSize, circleSize);
+        g.fillOval(TABLE_WIDTH * CELL_SIZE - CELL_SIZE * 3 - circleSize/2, upSideY - circleSize/2, circleSize, circleSize);
+
+
+    }
+
+    private void drawTable(Graphics2D g) {
+
         for (int row = 0; row < TABLE_HEIGHT; row++) {
             for (int col = 0; col < TABLE_WIDTH; col++) {
                 int x = col * CELL_SIZE + CELL_SIZE / 2;
-                int y = row * CELL_SIZE + CELL_SIZE / 2;
+                int y = row * CELL_SIZE + CELL_SIZE / 2 + STORAGE_HEIGHT;
 
                 if (booleanSlot(row, col)) {
-                    drawSlot(g, x, y); //
+                    drawSlot(g, x, y);
                 } else if (booleanSlotWithArc(row, col)) {
                     drawSlotWithArc(g, x, y);
                 }
             }
         }
+
     }
 
     private void drawSlotWithArc(Graphics2D g, int x, int y) {
+
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(2.5f));
 
@@ -68,7 +99,6 @@ public class GameTable extends JPanel implements MouseListener {
         g.setStroke(new BasicStroke(2.5f));
         g.drawOval(x - 10, y - 10, 20, 20);
     }
-
 
 
     /**
@@ -110,11 +140,10 @@ public class GameTable extends JPanel implements MouseListener {
         return false;
     }
 
-    private void drawStorage(Graphics2D g) {
 
-    }
 
     private void drawBottomArea(Graphics2D g) {
+
 
     }
 
