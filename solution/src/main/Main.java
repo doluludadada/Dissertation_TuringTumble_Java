@@ -1,3 +1,5 @@
+import utils.GameTable;
+
 import javax.swing.*;
 import java.awt.*;
 
