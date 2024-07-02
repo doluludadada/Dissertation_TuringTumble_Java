@@ -4,9 +4,9 @@ import utils.GameConstant;
 
 import java.awt.*;
 
-public class Ball implements GameComponents{
-//    private Colour colour;
-    private int x,y;
+public class Ball implements GameComponents {
+    //    private Colour colour;
+    private int x, y;
     private int dx, dy; // Gravity
     private static final int BALL_SIZE = GameConstant.CELL_SIZE.getValue() / 3;
     private Color ballColor;
@@ -14,7 +14,7 @@ public class Ball implements GameComponents{
     public Ball() {
     }
 
-    public Ball(int x, int y) {
+    public Ball(Color color, int x, int y) {
         this.x = x;
         this.y = y;
         this.dx = dx;
@@ -27,15 +27,20 @@ public class Ball implements GameComponents{
         g.fillOval(x - BALL_SIZE, y - BALL_SIZE, BALL_SIZE, BALL_SIZE);
     }
 
-    private void moveBall() {
+    public void moveBall() {
         x -= dx;
         y -= dy;
     }
 
-    private void ballPhysical() {
+    public void setBallColor(Color color) {}
 
+    public void reverseX() {
+        dx += dx;
     }
 
+    public void reverseY() {
+        dy += dy;
+    }
 
     public int getX() {
         return x;
@@ -52,4 +57,5 @@ public class Ball implements GameComponents{
     public void setY(int y) {
         this.y = y;
     }
+
 }

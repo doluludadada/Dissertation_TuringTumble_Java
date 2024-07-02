@@ -6,18 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
+
 
 import gamecomponents.*;
-
 
 
 /**
  *
  */
 
-public class GameTable extends JPanel implements MouseListener,ActionListener  {
+public class GameTable extends JPanel implements MouseListener, ActionListener {
     private static final int TABLE_WIDTH = GameConstant.TABLE_WIDTH.getValue();
     private static final int TABLE_HEIGHT = GameConstant.TABLE_HEIGHT.getValue();
     private static final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
@@ -28,17 +28,26 @@ public class GameTable extends JPanel implements MouseListener,ActionListener  {
     private Map<Point, GameComponents> components;
     private String selectedComponent;
 
+    private List<Ball> redBalls;
+    private List<Ball> blueBalls;
 
 
     public GameTable() {
+
         this.addMouseListener(this);
         this.setPreferredSize(new Dimension(TABLE_WIDTH * CELL_SIZE, TABLE_HEIGHT * CELL_SIZE + UPPER_SIDE_HEIGHT + BOTTOM_HEIGHT));
         this.setBackground(Color.WHITE);
         this.components = new HashMap<>();
+
+
         createUI();
 
-    }
+        GameLogic.initialiseBalls(redBalls, blueBalls);
+        this.redBalls = new ArrayList<>();
+        this.blueBalls = new ArrayList<>();
 
+
+    }
 
 
     private void createUI() {
@@ -72,8 +81,6 @@ public class GameTable extends JPanel implements MouseListener,ActionListener  {
         frame.pack();
         frame.setVisible(true);
     }
-
-
 
 
     @Override
@@ -231,6 +238,12 @@ public class GameTable extends JPanel implements MouseListener,ActionListener  {
     }
 
 
+    private void drawBalls(Graphics2D g) {
+        for (Ball ball : redBalls) {
+
+        }
+    }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -278,8 +291,10 @@ public class GameTable extends JPanel implements MouseListener,ActionListener  {
 
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        GameLogic.moveBalls(redBalls, components);
+        GameLogic.moveBalls(blueBalls, components);
     }
 }
