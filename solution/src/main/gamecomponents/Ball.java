@@ -32,8 +32,8 @@ public class Ball implements GameComponents {
 
     public void moveBall() {
         dy += GRAVITY;
-        this.x += this.dx;
-        this.y += this.dy;
+        this.x += this.dx + (Math.random() - 0.5);
+        this.y += this.dy + (Math.random() - 0.5);
     }
 
     public void setBallColor(Color color) {

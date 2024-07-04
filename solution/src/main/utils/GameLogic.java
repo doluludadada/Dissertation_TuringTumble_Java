@@ -91,6 +91,7 @@ public class GameLogic {
         double ballRadius = GameConstant.CELL_SIZE.getValue() / 6.0;
         double distanceToLine = line.ptSegDist(ball.getX(), ball.getY());
         return distanceToLine <= ballRadius;
+
     }
 
     private static void handleLineCollision(Ball ball, Line2D line) {
