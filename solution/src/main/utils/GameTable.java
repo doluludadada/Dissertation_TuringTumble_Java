@@ -1,16 +1,20 @@
 package utils;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.Line2D;
 import java.util.*;
 import java.util.List;
 
 
 import gamecomponents.*;
+
+import static utils.GameLogic.tableLines;
 
 
 /**
@@ -18,11 +22,12 @@ import gamecomponents.*;
  */
 
 public class GameTable extends JPanel implements MouseListener, ActionListener {
-    private static final int TABLE_WIDTH = GameConstant.TABLE_WIDTH.getValue();
-    private static final int TABLE_HEIGHT = GameConstant.TABLE_HEIGHT.getValue();
-    private static final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
-    private static final int UPPER_SIDE_HEIGHT = 2 * GameConstant.CELL_SIZE.getValue();
-    private static final int BOTTOM_HEIGHT = 2 * GameConstant.CELL_SIZE.getValue();
+    public static final int TABLE_WIDTH = GameConstant.TABLE_WIDTH.getValue();
+    public static final int TABLE_HEIGHT = GameConstant.TABLE_HEIGHT.getValue();
+    public static final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
+    public static final int UPPER_SIDE_HEIGHT = GameConstant.UPPER_SIDE_HEIGHT.getValue();
+    public static final int BOTTOM_HEIGHT = GameConstant.BOTTOM_SIDE_HEIGHT.getValue();
+
 
 
     private Map<Point, GameComponents> components;
@@ -30,6 +35,11 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
 
     private List<Ball> redBalls;
     private List<Ball> blueBalls;
+    private Set<Point> slots;
+    private Set<Point> slotsWithArc;
+
+
+    private Timer timer;
 
 
     public GameTable() {
@@ -39,14 +49,19 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
         this.setBackground(Color.WHITE);
         this.components = new HashMap<>();
 
+        this.redBalls = new ArrayList<>();
+        this.blueBalls = new ArrayList<>();
+        this.slots = new HashSet<>();
+        this.slotsWithArc = new HashSet<>();
+
 
         createUI();
 
         GameLogic.initialiseBalls(redBalls, blueBalls);
-        this.redBalls = new ArrayList<>();
-        this.blueBalls = new ArrayList<>();
+        GameLogic.initialiseTableLines();
 
-
+        timer = new Timer(40, this);
+        timer.start();
     }
 
 
@@ -86,15 +101,19 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         drawUpperSide(g2d);
         drawTable(g2d);
         drawBottomArea(g2d);
         drawComponents(g2d);
+        drawBalls(g2d);
     }
 
+
     private void drawUpperSide(Graphics2D g) {
+
         g.setStroke(new BasicStroke(3));
         g.setColor(Color.BLACK);
         int centreX = (TABLE_WIDTH * CELL_SIZE) / 2;
@@ -111,11 +130,6 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
         g.drawLine(centreX, storageMidY, (int) (CELL_SIZE * 8.5), (int) (UPPER_SIDE_HEIGHT / 1.6));
         g.drawLine(TABLE_WIDTH * CELL_SIZE, (int) (CELL_SIZE * 1.2), TABLE_WIDTH * CELL_SIZE - CELL_SIZE * 3, CELL_SIZE * 2);
 
-        // Draw two red circles
-        g.setColor(Color.RED);
-        int circleSize = 30;
-//        g.fillOval((int) (CELL_SIZE * 2.5) - circleSize / 2, (int) (UPPERSIDE_HEIGHT / 1.6) - circleSize / 2, circleSize, circleSize);
-//        g.fillOval((int) (CELL_SIZE * 8.5) - circleSize / 2, (int) (UPPERSIDE_HEIGHT / 1.6) - circleSize / 2, circleSize, circleSize);
 
     }
 
@@ -124,25 +138,25 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
 
         for (int row = 0; row < TABLE_HEIGHT; row++) {
             for (int col = 0; col < TABLE_WIDTH; col++) {
+
                 int x = col * CELL_SIZE + CELL_SIZE / 2;
                 int y = row * CELL_SIZE + CELL_SIZE / 2 + GameTable.UPPER_SIDE_HEIGHT;
+                Point point = new Point(col, row);
 
                 if (booleanSlot(row, col)) {
                     drawSlot(g, x, y);
+                    slots.add(point);
                 } else if (booleanSlotWithArc(row, col)) {
                     drawSlotWithArc(g, x, y);
+                    slotsWithArc.add(point);
                 }
 
-                Point point = new Point(col, row);
                 if (components.containsKey(point)) {
                     components.get(point).draw(g, x, y);
                 }
 
             }
-
-
         }
-
     }
 
     private void drawSlotWithArc(Graphics2D g, int x, int y) {
@@ -160,6 +174,8 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
         g.fillArc(x - 10, y + 7, 20, 10, 0, -180);
     }
 
+
+
     private void drawSlot(Graphics2D g, int x, int y) {
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(2.5f));
@@ -173,6 +189,7 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
      * @return
      */
     private boolean booleanSlotWithArc(int row, int col) {
+
         if (row == 0) {
             return (col == 3 || col == 7);
         }
@@ -187,11 +204,12 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
         if (row == 10 && col == 5) {
             return true;
         }
+
         return false;
     }
 
     private boolean booleanSlot(int row, int col) {
-        // Adjusting the logic based on your pattern
+
         if (row == 0) {
             return (col == 2 || col == 4 || col == 6 || col == 8);
         }
@@ -203,7 +221,9 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
                 return true;
             }
         }
+
         return false;
+
     }
 
 
@@ -211,23 +231,30 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(3));
 
-        // Left slanted line
         int leftStartX = 0;
         int leftStartY = TABLE_HEIGHT * CELL_SIZE + BOTTOM_HEIGHT;
         int leftEndX = (int) (4.5 * CELL_SIZE);
         int leftEndY = (int) (TABLE_HEIGHT * CELL_SIZE + UPPER_SIDE_HEIGHT + CELL_SIZE / 1.5);
-        g.drawLine(leftStartX, leftStartY, leftEndX, leftEndY);
 
-        // Right slanted line
+        Line2D leftLine = new Line2D.Float(leftStartX, leftStartY, leftEndX, leftEndY);
+        g.draw(leftLine);
+        tableLines.add(leftLine);
+
+        // right side
         int rightStartX = TABLE_WIDTH * CELL_SIZE;
         int rightStartY = TABLE_HEIGHT * CELL_SIZE + BOTTOM_HEIGHT;
         int rightEndX = TABLE_WIDTH * CELL_SIZE / 2;
         int rightEndY = (int) (TABLE_HEIGHT * CELL_SIZE + UPPER_SIDE_HEIGHT + CELL_SIZE / 1.5);
-        g.drawLine(rightStartX, rightStartY, rightEndX, rightEndY);
+
+        Line2D rightLine = new Line2D.Float(rightStartX, rightStartY, rightEndX, rightEndY);
+        g.draw(rightLine);
+        tableLines.add(rightLine);
+
 
     }
 
     private void drawComponents(Graphics2D g) {
+
         for (Map.Entry<Point, GameComponents> entry : components.entrySet()) {
             Point point = entry.getKey();
             GameComponents component = entry.getValue();
@@ -235,12 +262,16 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
             int y = point.y * CELL_SIZE + CELL_SIZE / 2 + UPPER_SIDE_HEIGHT;
             component.draw(g, x, y);
         }
+
     }
 
 
     private void drawBalls(Graphics2D g) {
         for (Ball ball : redBalls) {
-
+            ball.draw(g, ball.getX(), ball.getY());
+        }
+        for (Ball ball : blueBalls) {
+            ball.draw(g, ball.getX(), ball.getY());
         }
     }
 
@@ -269,6 +300,7 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
             }
         }
 
+
     }
 
     @Override
@@ -294,7 +326,8 @@ public class GameTable extends JPanel implements MouseListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        GameLogic.moveBalls(redBalls, components);
-        GameLogic.moveBalls(blueBalls, components);
+        GameLogic.moveBalls(redBalls, components, slots, slotsWithArc);
+        GameLogic.moveBalls(blueBalls, components, slots, slotsWithArc);
+        repaint();
     }
 }

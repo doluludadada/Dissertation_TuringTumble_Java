@@ -10,6 +10,7 @@ public class Ball implements GameComponents {
     private int dx, dy; // Gravity
     private static final int BALL_SIZE = GameConstant.CELL_SIZE.getValue() / 3;
     private Color ballColor;
+    private static final int GRAVITY = GameConstant.GRAVITY.getValue();
 
     public Ball() {
     }
@@ -17,29 +18,33 @@ public class Ball implements GameComponents {
     public Ball(Color color, int x, int y) {
         this.x = x;
         this.y = y;
-        this.dx = dx;
-        this.dy = dy;
+        this.dx = 0;
+        this.dy = 1;
+        this.ballColor = color;
+
     }
 
     @Override
     public void draw(Graphics2D g, int x, int y) {
         g.setColor(ballColor);
-        g.fillOval(x - BALL_SIZE, y - BALL_SIZE, BALL_SIZE, BALL_SIZE);
+        g.fillOval(x - BALL_SIZE / 2, y - BALL_SIZE / 2, BALL_SIZE, BALL_SIZE);
     }
 
     public void moveBall() {
-        x -= dx;
-        y -= dy;
+        dy += GRAVITY;
+        this.x += this.dx;
+        this.y += this.dy;
     }
 
-    public void setBallColor(Color color) {}
+    public void setBallColor(Color color) {
+    }
 
     public void reverseX() {
-        dx += dx;
+        dx = -dx;
     }
 
     public void reverseY() {
-        dy += dy;
+        dy = -dy;
     }
 
     public int getX() {
@@ -58,4 +63,19 @@ public class Ball implements GameComponents {
         this.y = y;
     }
 
+    public int getDx() {
+        return dx;
+    }
+
+    public void setDx(int dx) {
+        this.dx = dx;
+    }
+
+    public int getDy() {
+        return dy;
+    }
+
+    public void setDy(int dy) {
+        this.dy = dy;
+    }
 }

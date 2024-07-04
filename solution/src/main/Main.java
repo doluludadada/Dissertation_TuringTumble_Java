@@ -15,6 +15,6 @@ public class Main {
         win.pack();
         win.setLocationRelativeTo((Component)null);
         win.setVisible(true);
-        win.setResizable(false);    //這行程式碼禁止用戶調整窗口的大小。
+        win.setResizable(false);    
     }
 }

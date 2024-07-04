@@ -11,6 +11,10 @@ public enum GameConstant {
     BLUE_BALL_COUNT(5),     //
     UPPER_SIDE_HEIGHT(2 * CELL_SIZE.value),
     BOTTOM_SIDE_HEIGHT(2 * CELL_SIZE.value),
+    GRAVITY(1),
+
+
+
     ;
 
     private final int value;
