@@ -45,6 +45,7 @@ public class GameManager {
         this.slots = slots;
         this.slotsWithArc = slotsWithArc;
         this.components = components;
+
 //        initialiseBalls(world, redBalls, blueBalls);
     }
 
