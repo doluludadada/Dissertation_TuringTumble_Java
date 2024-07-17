@@ -1,7 +1,9 @@
 package com.gu.turingtumble.gamecomponents;
 
-import java.awt.*;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+
 
 public interface GameComponents {
-    void draw(Graphics2D g, int x, int y);
+    void draw(SpriteBatch batch, float x, float y);
 }

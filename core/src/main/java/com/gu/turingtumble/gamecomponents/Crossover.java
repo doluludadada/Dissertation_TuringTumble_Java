@@ -1,4 +1,6 @@
 package com.gu.turingtumble.gamecomponents;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -21,7 +23,7 @@ public class Crossover implements GameComponents  {
 
 
     @Override
-    public void draw(Graphics2D g, int x, int y) {
-        g.drawImage(image, x - image.getWidth() / 2, y - image.getHeight() / 2, null);
+    public void draw(SpriteBatch batch, float x, float y) {
+
     }
 }

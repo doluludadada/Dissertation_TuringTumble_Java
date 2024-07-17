@@ -1,32 +1,43 @@
 package com.gu.turingtumble;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class MainGame extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.gu.turingtumble.utils.GameBoard;
+
+
+public class MainGame extends Game {
+    public SpriteBatch batch;
+    private GameBoard gameBoard;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        gameBoard = GameBoard.getInstance();
+        setScreen(gameBoard);
+        gameBoard.show();
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+//        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        super.render();
+//        gameBoard.render(Gdx.graphics.getDeltaTime());
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        gameBoard.resize(width, height);
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         batch.dispose();
-        image.dispose();
+//        gameBoard.dispose();
     }
 }
+
