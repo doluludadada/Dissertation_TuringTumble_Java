@@ -214,7 +214,6 @@ public class GameBoard implements Screen {
         renderer.circle(x, y, 9);
         renderer.end();
     }
-
     private boolean isSlotWithArc(int row, int col) {
         if (row == 0) {
             return (col == 3 || col == 7);
