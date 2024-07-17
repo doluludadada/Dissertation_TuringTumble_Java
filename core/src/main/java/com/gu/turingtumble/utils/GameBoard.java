@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 //import com.gu.turingtumble.gamecomponents.Ball;
 import com.gu.turingtumble.gamecomponents.GameComponents;
@@ -28,7 +28,6 @@ public class GameBoard implements Screen {
     private List<GameComponents> gameComponents;
 //    private List<Ball> redBalls;
 //    private List<Ball> blueBalls;
-
 
 
     private Set<Vector2> slots;
@@ -58,7 +57,7 @@ public class GameBoard implements Screen {
     @Override
     public void show() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 900);
+        camera.setToOrtho(false, 800, 980);
         batch = new SpriteBatch();
 
 //        redBalls = new ArrayList<>();
@@ -74,6 +73,8 @@ public class GameBoard implements Screen {
 
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
+
+        createCollisionLines();
     }
 
     @Override
@@ -155,64 +156,120 @@ public class GameBoard implements Screen {
         float width = camera.viewportWidth;
         float height = camera.viewportHeight;
 
+//        // Draw background
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        shapeRenderer.rect(0, 0, width, height, Color.WHITE, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
+//        shapeRenderer.end();
 
-        // Draw background
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.rect(0, 0, width, height, Color.WHITE, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
-        shapeRenderer.end();
+//        // Draw border
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.BLACK);
+//        Gdx.gl.glLineWidth(50);
+//        shapeRenderer.rect(0, 0, width, height);
+//        shapeRenderer.end();
 
-        // Draw border
+        drawBoardLine();
+        drawBoardSlot();
+
+
+    }
+
+
+    private void drawBoardLine() {
+        float width = camera.viewportWidth;
+        float height = camera.viewportHeight;
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLACK);
-        Gdx.gl.glLineWidth(50);
-        shapeRenderer.rect(0, 0, width, height);
+        Gdx.gl.glLineWidth(6);
 
-        drawBoardSlot();
+
+        float[][] Lines = getLine(width, height);
+
+
+        for (float[] line : Lines) {
+            shapeRenderer.line(line[0], line[1], line[2], line[3]);
+        }
+
 
         shapeRenderer.end();
     }
 
+    private void createCollisionLines() {
+        float width = camera.viewportWidth;
+        float height = camera.viewportHeight;
+
+        float[][] lines = getLine(width, height);
+
+        for (float[] line : lines) {
+            createEdge(line[0], line[1], line[2], line[3]);
+        }
+    }
+
+
+    private float[][] getLine(float width, float height) {
+    /*
+      float x, float y, float x2, float y2      x1-x2, y1-y2
+    */
+        float[][] Lines = {
+            {width / 2, height, width / 2, height - 50},                                                // 上中線
+            {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                          // 上左斜線
+            {0, height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
+            {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                          // 右上斜線
+            {width, height - 100, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},              // 右下斜線
+            {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                        // 右下斜線
+            {0, 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
+        };
+        return Lines;
+    }
+
     private void drawBoardSlot() {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); // Start batch once
+
+        float offsetX = (camera.viewportWidth - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
+        float offsetY = (camera.viewportHeight - SLOT_NUMBER_HEIGHT * CELL_SIZE) / 2;
+
+
         for (int row = 0; row < SLOT_NUMBER_HEIGHT; row++) {
             for (int col = 0; col < SLOT_NUMBER_WIDTH; col++) {
-                int x = col * CELL_SIZE + CELL_SIZE / 2;
+                float x = col * CELL_SIZE + offsetX + CELL_SIZE / 2;
 
                 // Flipping the row index vertically
                 int flippedRow = SLOT_NUMBER_HEIGHT - row - 1;
                 // Calculating the y-coordinate for the slot
                 int baseY = flippedRow * CELL_SIZE;
-                int offsetY = CELL_SIZE / 2 + GameConstant.UPPER_SIDE_HEIGHT.getValue();
-                int y = baseY + offsetY;
+                float y = baseY + +offsetY;
 
 
                 if (isSlotWithArc(row, col)) {
                     drawSlotWithArc(shapeRenderer, x, y);
                 } else if (isSlot(row, col)) {
+
+
                     drawSlot(shapeRenderer, x, y);
                 }
             }
         }
-    }
-
-
-    private void drawSlotWithArc(ShapeRenderer renderer, int x, int y) {
-        renderer.begin(ShapeRenderer.ShapeType.Filled); // Ensure we use filled shape type
-        renderer.setColor(Color.RED);
-        renderer.circle(x, y, 9);
-        renderer.end();
-        // Uncomment and adjust if you need to draw arcs
-        // renderer.setColor(Color.LIGHT_GRAY);
-        // renderer.arc(x, y, 15, 0, 180);
-        // renderer.setColor(Color.WHITE);
-        // renderer.arc(x, y, 10, 0, 180);
+        shapeRenderer.end();
 
     }
 
-    private void drawSlot(ShapeRenderer renderer, int x, int y) {
-        renderer.begin(ShapeRenderer.ShapeType.Filled); // Ensure we use filled shape type
-        renderer.setColor(Color.BLACK);
-        renderer.circle(x, y, 9);
-        renderer.end();
+    private void drawSlotWithArc(ShapeRenderer renderer, float x, float y) {
+
+        renderer.setColor(Color.GRAY);
+        renderer.circle(x, y, 10);
+
+        renderer.setColor(Color.LIGHT_GRAY);
+        renderer.arc(x, y - 11, 11, 180, 180);
+
+        renderer.setColor(Color.WHITE);
+        renderer.arc(x, y - 10, 6, 180, 180);
+
+    }
+
+    private void drawSlot(ShapeRenderer renderer, float x, float y) {
+        renderer.setColor(Color.GRAY);
+        renderer.circle(x, y, 10);
 
     }
 
@@ -248,6 +305,25 @@ public class GameBoard implements Screen {
             }
         }
         return false;
+    }
+
+    private void createEdge(float x1, float y1, float x2, float y2) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        Body body = GameManager.getInstance().getWorld().createBody(bodyDef);
+
+        EdgeShape shape = new EdgeShape();
+        shape.set(x1, y1, x2, y2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.0f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
     }
 
 
