@@ -213,6 +213,7 @@ public class GameBoard implements Screen {
         renderer.setColor(Color.BLACK);
         renderer.circle(x, y, 9);
         renderer.end();
+
     }
 
     private boolean isSlotWithArc(int row, int col) {
