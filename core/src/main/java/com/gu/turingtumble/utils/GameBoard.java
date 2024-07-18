@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
-//import com.gu.turingtumble.gamecomponents.Ball;
+import com.gu.turingtumble.gamecomponents.Ball;
 import com.gu.turingtumble.gamecomponents.GameComponents;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -26,8 +26,6 @@ public class GameBoard implements Screen {
 
     private Box2DDebugRenderer debugRenderer;
     private List<GameComponents> gameComponents;
-//    private List<Ball> redBalls;
-//    private List<Ball> blueBalls;
 
 
     private Set<Vector2> slots;
@@ -37,14 +35,15 @@ public class GameBoard implements Screen {
     private GameManager gameManager;
 
 
-    private final float WORLD_WIDTH = GameConstant.WINDOW_WIDTH.getValue();
-    private final float WORLD_HEIGHT = GameConstant.WINDOW_HEIGHT.getValue();
+
     private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.getValue();
     private final int SLOT_NUMBER_HEIGHT = GameConstant.SLOT_NUMBER_HEIGHT.getValue();
     private final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
 
 
     private GameBoard() {
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 800, 980);
     }
 
     public static GameBoard getInstance() {
@@ -56,12 +55,10 @@ public class GameBoard implements Screen {
 
     @Override
     public void show() {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 980);
-        batch = new SpriteBatch();
 
-//        redBalls = new ArrayList<>();
-//        blueBalls = new ArrayList<>();
+        batch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
+
         gameComponents = new ArrayList<>();
 
         slots = new HashSet<>();
@@ -69,10 +66,9 @@ public class GameBoard implements Screen {
         components = new HashMap<>();
 
         gameManager = GameManager.getInstance();
-        gameManager.initialise(gameComponents, slots, slotsWithArc, components);
+        gameManager.initialise(gameComponents, components, new ArrayList<>(), new ArrayList<>());
 
         debugRenderer = new Box2DDebugRenderer();
-        shapeRenderer = new ShapeRenderer();
 
         createCollisionLines();
     }
@@ -81,11 +77,6 @@ public class GameBoard implements Screen {
     public void render(float delta) {
         update(delta);
         draw();
-
-
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.end();
-
 
     }
 
@@ -119,9 +110,7 @@ public class GameBoard implements Screen {
                 ((Disposable) component).dispose();
             }
         }
-//        for (Ball ball : redBalls) {
-//            ball.dispose();
-//        }
+
     }
 
 
@@ -134,7 +123,7 @@ public class GameBoard implements Screen {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            gameManager.handleInput((int) touchPos.x, (int) touchPos.y);
+
         }
     }
 
@@ -143,18 +132,29 @@ public class GameBoard implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);       //white
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
         drawBoard();
+
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        for (Ball ball : gameManager.getRedBalls()) {
+            ball.draw(batch, ball.getBody().getPosition().x, ball.getBody().getPosition().y);
+        }
+        for (Ball ball : gameManager.getBlueBalls()) {
+            ball.draw(batch, ball.getBody().getPosition().x, ball.getBody().getPosition().y);
+        }
+        batch.end();
+
 
 
         debugRenderer.render(gameManager.getWorld(), camera.combined);
 
     }
 
+
+
     private void drawBoard() {
-        float width = camera.viewportWidth;
-        float height = camera.viewportHeight;
 
 //        // Draw background
 //        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -179,6 +179,7 @@ public class GameBoard implements Screen {
         float width = camera.viewportWidth;
         float height = camera.viewportHeight;
 
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLACK);
         Gdx.gl.glLineWidth(6);
@@ -196,8 +197,10 @@ public class GameBoard implements Screen {
     }
 
     private void createCollisionLines() {
+
         float width = camera.viewportWidth;
         float height = camera.viewportHeight;
+
 
         float[][] lines = getLine(width, height);
 
@@ -226,8 +229,12 @@ public class GameBoard implements Screen {
     private void drawBoardSlot() {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); // Start batch once
 
-        float offsetX = (camera.viewportWidth - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
-        float offsetY = (camera.viewportHeight - SLOT_NUMBER_HEIGHT * CELL_SIZE) / 2;
+        float width = camera.viewportWidth;
+        float height = camera.viewportHeight;
+
+
+        float offsetX = (width - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
+        float offsetY = (height - SLOT_NUMBER_HEIGHT * CELL_SIZE) / 2;
 
 
         for (int row = 0; row < SLOT_NUMBER_HEIGHT; row++) {
@@ -324,6 +331,14 @@ public class GameBoard implements Screen {
         body.createFixture(fixtureDef);
         shape.dispose();
 
+    }
+
+    public float getCameraWidth() {
+        return camera.viewportWidth;
+    }
+
+    public float getCameraHeight() {
+        return camera.viewportHeight;
     }
 
 

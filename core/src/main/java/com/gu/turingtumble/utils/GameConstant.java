@@ -9,12 +9,6 @@ public enum GameConstant {
     CELL_SIZE(60),                                   //gap size
     RED_BALL_COUNT(5),                               //
     BLUE_BALL_COUNT(5),                              //
-    UPPER_SIDE_HEIGHT(2 * CELL_SIZE.getValue()),
-    BOTTOM_SIDE_HEIGHT(2 * CELL_SIZE.getValue()),
-    GRAVITY(1),
-    ENERGY_LOSS_VALUE(0.1),
-    WINDOW_WIDTH(8f),
-    WINDOW_HEIGHT(6f),
 
     ;
 

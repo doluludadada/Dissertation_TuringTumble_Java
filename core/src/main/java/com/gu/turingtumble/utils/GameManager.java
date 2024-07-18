@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.World;
-//import com.gu.turingtumble.gamecomponents.Ball;
+import com.gu.turingtumble.gamecomponents.Ball;
 import com.gu.turingtumble.gamecomponents.Crossover;
 import com.gu.turingtumble.gamecomponents.GameComponents;
 import com.gu.turingtumble.gamecomponents.Ramp;
@@ -19,14 +19,13 @@ public class GameManager {
 
     private World world;
     private List<GameComponents> gameComponents;
-//    private List<Ball> redBalls;
-//    private List<Ball> blueBalls;
-    private Set<Vector2> slots;
-    private Set<Vector2> slotsWithArc;
+    private List<Ball> redBalls;
+    private List<Ball> blueBalls;
     private Map<Vector2, GameComponents> components;
     private String selectedComponent;
 
     private GameManager() {
+
     }
 
     public static GameManager getInstance() {
@@ -36,36 +35,37 @@ public class GameManager {
         return instance;
     }
 
-    public void initialise(List<GameComponents> gameComponents, Set<Vector2> slots, Set<Vector2> slotsWithArc, Map<Vector2, GameComponents> components) {
+    public void initialise(List<GameComponents> gameComponents, Map<Vector2, GameComponents> components, List<Ball> redBalls, List<Ball> blueBalls) {
         Box2D.init();
         this.world = new World(new Vector2(0, -9.8f), true);
         this.gameComponents = gameComponents;
-//        this.redBalls = redBalls;
-//        this.blueBalls = blueBalls;
-        this.slots = slots;
-        this.slotsWithArc = slotsWithArc;
+        this.redBalls = redBalls;
+        this.blueBalls = blueBalls;
         this.components = components;
 
-//        initialiseBalls(world, redBalls, blueBalls);
+        initialiseBalls();
     }
 
     public World getWorld() {
         return world;
     }
 
-//    private void initialiseBalls(World world, List<Ball> redBalls, List<Ball> blueBalls) {
-//        int centreX = GameConstant.SLOT_NUMBER_WIDTH.getValue() / 2 * GameConstant.CELL_SIZE.getValue();
-//        int startY = GameConstant.UPPER_SIDE_HEIGHT.getValue() / 3 - 10;
-//        int redStartX = centreX + 10 + GameConstant.CELL_SIZE.getValue();
-//        int blueStartX = centreX - GameConstant.CELL_SIZE.getValue();
-//
-//        for (int i = 0; i < GameConstant.RED_BALL_COUNT.getValue(); i++) {
-//            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i * 5));
-//        }
-//        for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.getValue(); i++) {
-//            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i * 5));
-//        }
-//    }
+    private void initialiseBalls() {
+
+
+        float centreX = GameBoard.getInstance().getCameraWidth() / 2;
+        float startY = GameBoard.getInstance().getCameraHeight();
+        float redStartX = centreX + 10 + GameConstant.CELL_SIZE.getValue();
+        float blueStartX = centreX - GameConstant.CELL_SIZE.getValue();
+
+
+        for (int i = 0; i < GameConstant.RED_BALL_COUNT.getValue(); i++) {
+            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i));
+        }
+        for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.getValue(); i++) {
+            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
+        }
+    }
 
     public void updateGameLogic(float delta) {
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
@@ -75,15 +75,6 @@ public class GameManager {
 
     }
 
-    public void handleInput(int x, int y) {
-        int col = (int) (x / GameConstant.CELL_SIZE.getValue());
-        int row = (int) ((y - GameConstant.UPPER_SIDE_HEIGHT.getValue()) / GameConstant.CELL_SIZE.getValue());
-
-        if (row >= 0 && row < GameConstant.SLOT_NUMBER_HEIGHT.getValue() &&
-            col >= 0 && col < GameConstant.SLOT_NUMBER_WIDTH.getValue()) {
-            addComponent(col, row);
-        }
-    }
 
     private void addComponent(float x, float y) {
         if (selectedComponent != null) {
@@ -102,5 +93,21 @@ public class GameManager {
                 gameComponents.add(component);
             }
         }
+    }
+
+    public List<Ball> getBlueBalls() {
+        return blueBalls;
+    }
+
+    public void setBlueBalls(List<Ball> blueBalls) {
+        this.blueBalls = blueBalls;
+    }
+
+    public List<Ball> getRedBalls() {
+        return redBalls;
+    }
+
+    public void setRedBalls(List<Ball> redBalls) {
+        this.redBalls = redBalls;
     }
 }
