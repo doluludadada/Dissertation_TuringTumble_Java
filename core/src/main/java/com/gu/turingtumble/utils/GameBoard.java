@@ -6,31 +6,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Disposable;
 import com.gu.turingtumble.gamecomponents.Ball;
-import com.gu.turingtumble.gamecomponents.GameComponents;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.util.*;
 
 public class GameBoard implements Screen {
 
     private static GameBoard gameBoard = null;
-    private OrthographicCamera camera;
-    private SpriteBatch batch;
+    private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
-
     private Box2DDebugRenderer debugRenderer;
 
-    private List<GameComponents> gameComponents;
-
-//    private Set<Vector2> slots;
-//    private Set<Vector2> slotsWithArc;
-//    private Map<Vector2, GameComponents> components;
 
     private GameManager gameManager;
 
@@ -54,16 +42,9 @@ public class GameBoard implements Screen {
 
     @Override
     public void show() {
-
-        batch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-
-
+        initialiseRenderers();
         gameManager = GameManager.getInstance();
         gameManager.initialise();
-
-        debugRenderer = new Box2DDebugRenderer();
-
         createCollisionLines();
     }
 
@@ -99,30 +80,31 @@ public class GameBoard implements Screen {
 
     @Override
     public void dispose() {
-        batch.dispose();
+        shapeRenderer.dispose();
         gameManager.getWorld().dispose();
         debugRenderer.dispose();
-        for (GameComponents component : gameComponents) {
-            if (component instanceof Disposable) {
-                ((Disposable) component).dispose();
-            }
-        }
     }
 
 
     private void update(float delta) {
-
         gameManager.updateGameLogic(delta);
         camera.update();
+        handleInput();
+    }
 
+    private void initialiseRenderers() {
+        shapeRenderer = new ShapeRenderer();
+        debugRenderer = new Box2DDebugRenderer();
+    }
 
-//        deal mouse event
+    private void handleInput() {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
         }
-
     }
+
+
 
 
     private void draw() {
@@ -130,32 +112,23 @@ public class GameBoard implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);       //white
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
         shapeRenderer.setProjectionMatrix(camera.combined);
+
         drawBoard();
-
-        batch.setProjectionMatrix(camera.combined);
-
-
-
-
         drawBalls();
 
-
-
-//        debugRenderer.render(gameManager.getWorld(), camera.combined);
+        debugRenderer.render(gameManager.getWorld(), camera.combined);
 
     }
 
     private void drawBalls() {
         for (Ball ball : gameManager.getRedBalls()) {
-            ball.draw();
+            ball.draw(shapeRenderer);
         }
         for (Ball ball : gameManager.getBlueBalls()) {
-            ball.draw();
+            ball.draw(shapeRenderer);
         }
     }
-
 
 
     private void drawBoard() {
@@ -233,7 +206,6 @@ public class GameBoard implements Screen {
     }
 
     private void drawBoardSlot() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled); // Start batch once
 
         float width = camera.viewportWidth;
         float height = camera.viewportHeight;
@@ -242,6 +214,7 @@ public class GameBoard implements Screen {
         float offsetX = (width - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
         float offsetY = (height - SLOT_NUMBER_HEIGHT * CELL_SIZE) / 2;
 
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         for (int row = 0; row < SLOT_NUMBER_HEIGHT; row++) {
             for (int col = 0; col < SLOT_NUMBER_WIDTH; col++) {

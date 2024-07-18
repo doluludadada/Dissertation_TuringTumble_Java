@@ -22,10 +22,10 @@ public class MainGame extends Game {
 
     @Override
     public void render() {
-//        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         super.render();
-//        gameBoard.render(Gdx.graphics.getDeltaTime());
+        gameBoard.render(Gdx.graphics.getDeltaTime());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MainGame extends Game {
     public void dispose() {
         super.dispose();
         batch.dispose();
-//        gameBoard.dispose();
+        gameBoard.dispose();
     }
 }
 

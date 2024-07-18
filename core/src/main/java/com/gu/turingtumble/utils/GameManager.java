@@ -41,21 +41,22 @@ public class GameManager {
     }
 
     public void initialise() {
-        Box2D.init();
-        this.world = new World(new Vector2(0, -9.8f), true);
+        initialiseWorld();
         initialiseBalls();
     }
 
 
-    public World getWorld() {
-        return world;
+    private void initialiseWorld() {
+        Box2D.init();
+        this.world = new World(new Vector2(0, -9.8f), true);
     }
 
     public void initialiseBalls() {
 
 
         float centreX = GameBoard.getInstance().getCameraWidth() / 2;
-        float startY = GameBoard.getInstance().getCameraHeight();
+        float startY = GameBoard.getInstance().getCameraHeight() + 30;
+
         float redStartX = centreX + 10 + GameConstant.CELL_SIZE.getValue();
         float blueStartX = centreX - GameConstant.CELL_SIZE.getValue();
 
@@ -104,5 +105,9 @@ public class GameManager {
     public List<Ball> getRedBalls() {
         return redBalls;
     }
+    public World getWorld() {
+        return world;
+    }
+
 
 }
