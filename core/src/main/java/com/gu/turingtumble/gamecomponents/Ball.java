@@ -1,8 +1,6 @@
 package com.gu.turingtumble.gamecomponents;
 
 
-
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,18 +9,14 @@ import com.gu.turingtumble.utils.GameConstant;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 
-public class Ball implements GameComponents {
+public class Ball  {
     private Body body;
     private Color ballColour;
     private static final float RADIUS = GameConstant.CELL_SIZE.getValue() / 6f;
     private ShapeRenderer shapeRenderer;
 
 
-    public Ball() {
-    }
-
     public Ball(World world, Color colour, float x, float y) {
-
 
         this.ballColour = colour;
         this.shapeRenderer = new ShapeRenderer();
@@ -48,19 +42,13 @@ public class Ball implements GameComponents {
         shape.dispose();
     }
 
-    @Override
-    public void draw(SpriteBatch batch, float x, float y) {
+    public void draw() {
 
-        batch.end();
 
-        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(ballColour);
         shapeRenderer.circle(body.getPosition().x, body.getPosition().y, RADIUS);
         shapeRenderer.end();
-
-        batch.begin();
-
 
     }
 

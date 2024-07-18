@@ -25,15 +25,14 @@ public class GameBoard implements Screen {
     private ShapeRenderer shapeRenderer;
 
     private Box2DDebugRenderer debugRenderer;
+
     private List<GameComponents> gameComponents;
 
-
-    private Set<Vector2> slots;
-    private Set<Vector2> slotsWithArc;
-    private Map<Vector2, GameComponents> components;
+//    private Set<Vector2> slots;
+//    private Set<Vector2> slotsWithArc;
+//    private Map<Vector2, GameComponents> components;
 
     private GameManager gameManager;
-
 
 
     private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.getValue();
@@ -59,14 +58,9 @@ public class GameBoard implements Screen {
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
 
-        gameComponents = new ArrayList<>();
-
-        slots = new HashSet<>();
-        slotsWithArc = new HashSet<>();
-        components = new HashMap<>();
 
         gameManager = GameManager.getInstance();
-        gameManager.initialise(gameComponents, components, new ArrayList<>(), new ArrayList<>());
+        gameManager.initialise();
 
         debugRenderer = new Box2DDebugRenderer();
 
@@ -75,6 +69,7 @@ public class GameBoard implements Screen {
 
     @Override
     public void render(float delta) {
+
         update(delta);
         draw();
 
@@ -83,9 +78,11 @@ public class GameBoard implements Screen {
 
     @Override
     public void resize(int width, int height) {
+
         camera.viewportWidth = width;
         camera.viewportHeight = height;
         camera.update();
+
     }
 
     @Override
@@ -110,11 +107,11 @@ public class GameBoard implements Screen {
                 ((Disposable) component).dispose();
             }
         }
-
     }
 
 
     private void update(float delta) {
+
         gameManager.updateGameLogic(delta);
         camera.update();
 
@@ -123,12 +120,13 @@ public class GameBoard implements Screen {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-
         }
+
     }
 
 
     private void draw() {
+
         Gdx.gl.glClearColor(1, 1, 1, 1);       //white
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -137,19 +135,25 @@ public class GameBoard implements Screen {
         drawBoard();
 
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
+
+
+
+
+        drawBalls();
+
+
+
+//        debugRenderer.render(gameManager.getWorld(), camera.combined);
+
+    }
+
+    private void drawBalls() {
         for (Ball ball : gameManager.getRedBalls()) {
-            ball.draw(batch, ball.getBody().getPosition().x, ball.getBody().getPosition().y);
+            ball.draw();
         }
         for (Ball ball : gameManager.getBlueBalls()) {
-            ball.draw(batch, ball.getBody().getPosition().x, ball.getBody().getPosition().y);
+            ball.draw();
         }
-        batch.end();
-
-
-
-        debugRenderer.render(gameManager.getWorld(), camera.combined);
-
     }
 
 
@@ -176,6 +180,7 @@ public class GameBoard implements Screen {
 
 
     private void drawBoardLine() {
+
         float width = camera.viewportWidth;
         float height = camera.viewportHeight;
 
@@ -207,6 +212,7 @@ public class GameBoard implements Screen {
         for (float[] line : lines) {
             createEdge(line[0], line[1], line[2], line[3]);
         }
+
     }
 
 
@@ -239,20 +245,20 @@ public class GameBoard implements Screen {
 
         for (int row = 0; row < SLOT_NUMBER_HEIGHT; row++) {
             for (int col = 0; col < SLOT_NUMBER_WIDTH; col++) {
+
                 float x = col * CELL_SIZE + offsetX + CELL_SIZE / 2;
 
                 // Flipping the row index vertically
                 int flippedRow = SLOT_NUMBER_HEIGHT - row - 1;
                 // Calculating the y-coordinate for the slot
                 int baseY = flippedRow * CELL_SIZE;
+
                 float y = baseY + +offsetY;
 
 
                 if (isSlotWithArc(row, col)) {
                     drawSlotWithArc(shapeRenderer, x, y);
                 } else if (isSlot(row, col)) {
-
-
                     drawSlot(shapeRenderer, x, y);
                 }
             }
@@ -275,6 +281,7 @@ public class GameBoard implements Screen {
     }
 
     private void drawSlot(ShapeRenderer renderer, float x, float y) {
+
         renderer.setColor(Color.GRAY);
         renderer.circle(x, y, 10);
 

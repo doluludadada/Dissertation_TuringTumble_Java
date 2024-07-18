@@ -9,9 +9,11 @@ import com.gu.turingtumble.gamecomponents.Crossover;
 import com.gu.turingtumble.gamecomponents.GameComponents;
 import com.gu.turingtumble.gamecomponents.Ramp;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 public class GameManager {
 
@@ -25,7 +27,10 @@ public class GameManager {
     private String selectedComponent;
 
     private GameManager() {
-
+        gameComponents = new ArrayList<>();
+        redBalls = new ArrayList<>();
+        blueBalls = new ArrayList<>();
+        components = new HashMap<>();
     }
 
     public static GameManager getInstance() {
@@ -35,22 +40,18 @@ public class GameManager {
         return instance;
     }
 
-    public void initialise(List<GameComponents> gameComponents, Map<Vector2, GameComponents> components, List<Ball> redBalls, List<Ball> blueBalls) {
+    public void initialise() {
         Box2D.init();
         this.world = new World(new Vector2(0, -9.8f), true);
-        this.gameComponents = gameComponents;
-        this.redBalls = redBalls;
-        this.blueBalls = blueBalls;
-        this.components = components;
-
         initialiseBalls();
     }
+
 
     public World getWorld() {
         return world;
     }
 
-    private void initialiseBalls() {
+    public void initialiseBalls() {
 
 
         float centreX = GameBoard.getInstance().getCameraWidth() / 2;
@@ -65,6 +66,7 @@ public class GameManager {
         for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.getValue(); i++) {
             blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
         }
+
     }
 
     public void updateGameLogic(float delta) {
@@ -99,15 +101,8 @@ public class GameManager {
         return blueBalls;
     }
 
-    public void setBlueBalls(List<Ball> blueBalls) {
-        this.blueBalls = blueBalls;
-    }
-
     public List<Ball> getRedBalls() {
         return redBalls;
     }
 
-    public void setRedBalls(List<Ball> redBalls) {
-        this.redBalls = redBalls;
-    }
 }
