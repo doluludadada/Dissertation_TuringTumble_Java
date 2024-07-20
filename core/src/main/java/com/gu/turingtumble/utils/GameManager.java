@@ -54,17 +54,17 @@ public class GameManager {
     public void initialiseBalls() {
 
 
-        float centreX = GameBoard.getInstance().getCameraWidth() / 2;
-        float startY = GameBoard.getInstance().getCameraHeight() + 30;
+        float centreX = (GameBoard.getInstance().getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
+        float startY = GameBoard.getInstance().getCameraHeight() - 30;
 
-        float redStartX = centreX + 10 + GameConstant.CELL_SIZE.getValue();
-        float blueStartX = centreX - GameConstant.CELL_SIZE.getValue();
+        float redStartX = centreX + GameConstant.CELL_SIZE.get();
+        float blueStartX = centreX - GameConstant.CELL_SIZE.get();
 
 
-        for (int i = 0; i < GameConstant.RED_BALL_COUNT.getValue(); i++) {
+        for (int i = 0; i < GameConstant.RED_BALL_COUNT.get(); i++) {
             redBalls.add(new Ball(world, Color.RED, redStartX, startY + i));
         }
-        for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.getValue(); i++) {
+        for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.get(); i++) {
             blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
         }
 
@@ -74,7 +74,7 @@ public class GameManager {
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
         // 6：速度迭代的次數，用於更準確地計算物體的速度
         // 2：位置迭代的次數，用於更準確地計算物體的位置
-        world.step(1 / 60f, 6, 2);
+        world.step(1 / 30f, 6, 2);
 
     }
 
@@ -105,6 +105,7 @@ public class GameManager {
     public List<Ball> getRedBalls() {
         return redBalls;
     }
+
     public World getWorld() {
         return world;
     }

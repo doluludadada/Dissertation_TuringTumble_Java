@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gu.turingtumble.gamecomponents.Ball;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -18,19 +20,20 @@ public class GameBoard implements Screen {
     private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private Box2DDebugRenderer debugRenderer;
-
+    private Viewport viewport;
 
     private GameManager gameManager;
 
-
-    private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.getValue();
-    private final int SLOT_NUMBER_HEIGHT = GameConstant.SLOT_NUMBER_HEIGHT.getValue();
-    private final int CELL_SIZE = GameConstant.CELL_SIZE.getValue();
+    private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.get();
+    private final int SLOT_NUMBER_HEIGHT = GameConstant.SLOT_NUMBER_HEIGHT.get();
+    private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
     private GameBoard() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 980);
+        viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
+        gameManager = GameManager.getInstance();
+        initialiseRenderers();
     }
 
     public static GameBoard getInstance() {
@@ -42,26 +45,23 @@ public class GameBoard implements Screen {
 
     @Override
     public void show() {
-        initialiseRenderers();
-        gameManager = GameManager.getInstance();
         gameManager.initialise();
         createCollisionLines();
     }
 
     @Override
     public void render(float delta) {
-
         update(delta);
         draw();
-
     }
 
 
     @Override
     public void resize(int width, int height) {
 
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
+        viewport.update(width, height, true);
+//        camera.translate(-400,0);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
     }
@@ -105,9 +105,8 @@ public class GameBoard implements Screen {
     }
 
 
-
-
     private void draw() {
+//        viewport.apply();
 
         Gdx.gl.glClearColor(1, 1, 1, 1);       //white
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -134,16 +133,16 @@ public class GameBoard implements Screen {
     private void drawBoard() {
 
 //        // Draw background
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//        shapeRenderer.rect(0, 0, width, height, Color.WHITE, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
-//        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.rect(0, 0, GameConstant.UI_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), Color.WHITE, Color.WHITE, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
+        shapeRenderer.end();
 
-//        // Draw border
-//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-//        shapeRenderer.setColor(Color.BLACK);
-//        Gdx.gl.glLineWidth(50);
-//        shapeRenderer.rect(0, 0, width, height);
-//        shapeRenderer.end();
+        // Draw border
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.BLACK);
+        Gdx.gl.glLineWidth(10);
+        shapeRenderer.rect(GameConstant.UI_WIDTH.get(), 0, GameConstant.GAME_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get());
+        shapeRenderer.end();
 
         drawBoardLine();
         drawBoardSlot();
@@ -154,7 +153,7 @@ public class GameBoard implements Screen {
 
     private void drawBoardLine() {
 
-        float width = camera.viewportWidth;
+        float width = camera.viewportWidth + GameConstant.UI_WIDTH.get();
         float height = camera.viewportHeight;
 
 
@@ -176,7 +175,7 @@ public class GameBoard implements Screen {
 
     private void createCollisionLines() {
 
-        float width = camera.viewportWidth;
+        float width = camera.viewportWidth + GameConstant.UI_WIDTH.get();
         float height = camera.viewportHeight;
 
 
@@ -185,6 +184,13 @@ public class GameBoard implements Screen {
         for (float[] line : lines) {
             createEdge(line[0], line[1], line[2], line[3]);
         }
+
+        // Add border lines
+        createEdge(GameConstant.UI_WIDTH.get(), 0, GameConstant.UI_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get()); // left border
+        createEdge(GameConstant.UI_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get()); // top border
+        createEdge(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), GameConstant.WINDOW_WIDTH.get(), 0); // right border
+        createEdge(GameConstant.WINDOW_WIDTH.get(), 0, GameConstant.UI_WIDTH.get(), 0); // bottom border
+
 
     }
 
@@ -196,18 +202,18 @@ public class GameBoard implements Screen {
         float[][] Lines = {
             {width / 2, height, width / 2, height - 50},                                                // 上中線
             {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                          // 上左斜線
-            {0, height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
+            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
             {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                          // 右上斜線
             {width, height - 100, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},              // 右下斜線
             {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                        // 右下斜線
-            {0, 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
+            {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
         };
         return Lines;
     }
 
     private void drawBoardSlot() {
 
-        float width = camera.viewportWidth;
+        float width = camera.viewportWidth + 400;
         float height = camera.viewportHeight;
 
 
