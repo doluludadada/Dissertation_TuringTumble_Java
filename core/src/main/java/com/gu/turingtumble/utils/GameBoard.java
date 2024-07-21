@@ -6,12 +6,17 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gu.turingtumble.gamecomponents.Ball;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.gu.turingtumble.gamecomponents.GameComponents;
+
+import java.util.Map;
 
 
 public class GameBoard implements Screen {
@@ -22,17 +27,18 @@ public class GameBoard implements Screen {
     private Box2DDebugRenderer debugRenderer;
     private Viewport viewport;
 
-    private GameManager gameManager;
 
     private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.get();
     private final int SLOT_NUMBER_HEIGHT = GameConstant.SLOT_NUMBER_HEIGHT.get();
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
+
+
+
     private GameBoard() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
-        gameManager = GameManager.getInstance();
         initialiseRenderers();
     }
 
@@ -45,7 +51,7 @@ public class GameBoard implements Screen {
 
     @Override
     public void show() {
-        gameManager.initialise();
+        GameManager.initialise();
         createCollisionLines();
     }
 
@@ -58,9 +64,7 @@ public class GameBoard implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
         viewport.update(width, height, true);
-//        camera.translate(-400,0);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
@@ -81,13 +85,13 @@ public class GameBoard implements Screen {
     @Override
     public void dispose() {
         shapeRenderer.dispose();
-        gameManager.getWorld().dispose();
+        GameManager.getWorld().dispose();
         debugRenderer.dispose();
     }
 
 
     private void update(float delta) {
-        gameManager.updateGameLogic(delta);
+        GameManager.updateGameLogic(delta);
         camera.update();
         handleInput();
     }
@@ -98,10 +102,14 @@ public class GameBoard implements Screen {
     }
 
     private void handleInput() {
+
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
+            GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
+            System.out.println(touchPos.x + " " + touchPos.y);
         }
+
     }
 
 
@@ -115,16 +123,17 @@ public class GameBoard implements Screen {
 
         drawBoard();
         drawBalls();
+        drawComponents();
 
-        debugRenderer.render(gameManager.getWorld(), camera.combined);
+        debugRenderer.render(GameManager.getWorld(), camera.combined);
 
     }
 
     private void drawBalls() {
-        for (Ball ball : gameManager.getRedBalls()) {
+        for (Ball ball : GameManager.getRedBalls()) {
             ball.draw(shapeRenderer);
         }
-        for (Ball ball : gameManager.getBlueBalls()) {
+        for (Ball ball : GameManager.getBlueBalls()) {
             ball.draw(shapeRenderer);
         }
     }
@@ -146,7 +155,6 @@ public class GameBoard implements Screen {
 
         drawBoardLine();
         drawBoardSlot();
-
 
     }
 
@@ -191,7 +199,6 @@ public class GameBoard implements Screen {
         createEdge(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), GameConstant.WINDOW_WIDTH.get(), 0); // right border
         createEdge(GameConstant.WINDOW_WIDTH.get(), 0, GameConstant.UI_WIDTH.get(), 0); // bottom border
 
-
     }
 
 
@@ -200,22 +207,20 @@ public class GameBoard implements Screen {
       float x, float y, float x2, float y2      x1-x2, y1-y2
     */
         float[][] Lines = {
-            {width / 2, height, width / 2, height - 50},                                                // 上中線
-            {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                          // 上左斜線
+            {width / 2, height, width / 2, height - 50},                                                                          // 上中線
+            {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                                                    // 上左斜線
             {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
-            {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                          // 右上斜線
-            {width, height - 100, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},              // 右下斜線
-            {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                        // 右下斜線
+            {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                                                    // 右上斜線
+            {width, height - 100, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                        // 右下斜線
+            {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                                  // 右下斜線
             {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
         };
         return Lines;
     }
 
     private void drawBoardSlot() {
-
         float width = camera.viewportWidth + 400;
         float height = camera.viewportHeight;
-
 
         float offsetX = (width - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
         float offsetY = (height - SLOT_NUMBER_HEIGHT * CELL_SIZE) / 2;
@@ -234,16 +239,16 @@ public class GameBoard implements Screen {
 
                 float y = baseY + +offsetY;
 
-
-                if (isSlotWithArc(row, col)) {
+                if (GameManager.isSlotWithArc(row, col)) {
                     drawSlotWithArc(shapeRenderer, x, y);
-                } else if (isSlot(row, col)) {
+                    GameManager.addSlotPosition(new Vector2(x, y), true);
+                } else if (GameManager.isSlot(row, col)) {
                     drawSlot(shapeRenderer, x, y);
+                    GameManager.addSlotPosition(new Vector2(x, y), false);
                 }
             }
         }
         shapeRenderer.end();
-
     }
 
     private void drawSlotWithArc(ShapeRenderer renderer, float x, float y) {
@@ -267,43 +272,22 @@ public class GameBoard implements Screen {
     }
 
 
-    private boolean isSlotWithArc(int row, int col) {
-        if (row == 0) {
-            return (col == 3 || col == 7);
+    private void drawComponents() {
+        SpriteBatch batch = new SpriteBatch();
+        batch.setProjectionMatrix(camera.combined);
+        for (Map.Entry<Vector2, GameComponents> entry : GameManager.getComponents().entrySet()) {
+            GameComponents component = entry.getValue();
+            Vector2 position = entry.getKey();
+            component.draw(batch, position.x, position.y);
         }
-        if (row == 1) {
-            return (col > 1 && col < 9 && col % 2 == 0);
-        }
-        if (row >= 2 && row <= 9) {
-            if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) {
-                return true;
-            }
-        }
-        if (row == 10 && col == 5) {
-            return true;
-        }
-        return false;
+        batch.dispose();
     }
 
-    private boolean isSlot(int row, int col) {
-        if (row == 0) {
-            return (col == 2 || col == 4 || col == 6 || col == 8);
-        }
-        if (row == 1) {
-            return (col <= 9 && col % 2 == 1);
-        }
-        if (row >= 2 && row <= 9) {
-            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private void createEdge(float x1, float y1, float x2, float y2) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        Body body = GameManager.getInstance().getWorld().createBody(bodyDef);
+        Body body = GameManager.getWorld().createBody(bodyDef);
 
         EdgeShape shape = new EdgeShape();
         shape.set(x1, y1, x2, y2);
@@ -318,6 +302,7 @@ public class GameBoard implements Screen {
         shape.dispose();
 
     }
+
 
     public float getCameraWidth() {
         return camera.viewportWidth;

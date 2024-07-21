@@ -1,11 +1,11 @@
 package com.gu.turingtumble.utils;
 
-import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
@@ -24,20 +24,34 @@ public class GameUI {
         table.setFillParent(true);
         stage.addActor(table);
 
-        VisWindow window = new VisWindow ("Game UI");
+        VisWindow window = new VisWindow("Game UI");
         table.add(window).expand().top().left();
 
-        VisTextButton addButton = new VisTextButton("Add Component");
-        window.add(addButton).pad(10);
-
-        window.row();
-
-        VisTextButton removeButton = new VisTextButton("Remove Component");
-        window.add(removeButton).pad(10);
+        // Adding component selection buttons
+        addButton(window, "Ramp");
+        addButton(window, "Crossover");
+        addButton(window, "Bit");
+        addButton(window, "Interceptor");
+        addButton(window, "Gear");
+        addButton(window, "GearBit");
 
         window.pack();
         window.setPosition(10, Gdx.graphics.getHeight() - window.getHeight());
     }
+
+    private void addButton(VisWindow window, final String componentType) {
+        VisTextButton button = new VisTextButton("Add " + componentType);
+        button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                GameManager.setSelectedComponent(componentType);
+            }
+        });
+        window.add(button).pad(10);
+        window.row();
+    }
+
+
 
     public void render() {
         stage.act(Gdx.graphics.getDeltaTime());

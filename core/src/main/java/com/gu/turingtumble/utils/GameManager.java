@@ -2,12 +2,8 @@ package com.gu.turingtumble.utils;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2D;
-import com.badlogic.gdx.physics.box2d.World;
-import com.gu.turingtumble.gamecomponents.Ball;
-import com.gu.turingtumble.gamecomponents.Crossover;
-import com.gu.turingtumble.gamecomponents.GameComponents;
-import com.gu.turingtumble.gamecomponents.Ramp;
+import com.badlogic.gdx.physics.box2d.*;
+import com.gu.turingtumble.gamecomponents.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,44 +12,30 @@ import java.util.Map;
 
 
 public class GameManager {
+    private static World world;
+    private static List<Ball> redBalls = new ArrayList<>();
+    private static List<Ball> blueBalls = new ArrayList<>();
+    private static Map<Vector2, GameComponents> components = new HashMap<>();
+    private static String selectedComponent;
 
-    private static GameManager instance;
 
-    private World world;
-    private List<GameComponents> gameComponents;
-    private List<Ball> redBalls;
-    private List<Ball> blueBalls;
-    private Map<Vector2, GameComponents> components;
-    private String selectedComponent;
+    private static List<Vector2> slotPositions = new ArrayList<>();
+    private static List<Vector2> slotWithArcPositions = new ArrayList<>();
 
-    private GameManager() {
-        gameComponents = new ArrayList<>();
-        redBalls = new ArrayList<>();
-        blueBalls = new ArrayList<>();
-        components = new HashMap<>();
-    }
 
-    public static GameManager getInstance() {
-        if (instance == null) {
-            instance = new GameManager();
-        }
-        return instance;
-    }
 
-    public void initialise() {
+    public static void initialise() {
         initialiseWorld();
         initialiseBalls();
     }
 
 
-    private void initialiseWorld() {
+    private static void initialiseWorld() {
         Box2D.init();
-        this.world = new World(new Vector2(0, -9.8f), true);
+        world = new World(new Vector2(0, -9.8f), true);
     }
 
-    public void initialiseBalls() {
-
-
+    public static void initialiseBalls() {
         float centreX = (GameBoard.getInstance().getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
         float startY = GameBoard.getInstance().getCameraHeight() - 30;
 
@@ -70,7 +52,7 @@ public class GameManager {
 
     }
 
-    public void updateGameLogic(float delta) {
+    public static void updateGameLogic(float delta) {
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
         // 6：速度迭代的次數，用於更準確地計算物體的速度
         // 2：位置迭代的次數，用於更準確地計算物體的位置
@@ -78,37 +60,136 @@ public class GameManager {
 
     }
 
-
-    private void addComponent(float x, float y) {
-        if (selectedComponent != null) {
-            GameComponents component = null;
-            switch (selectedComponent) {
-                case "Ramp":
-                    component = new Ramp();
-                    gameComponents.add((Ramp) component);
-                    break;
-                case "Crossover":
-                    component = new Crossover();
-                    gameComponents.add((Crossover) component);
-                    break;
-            }
-            if (component != null) {
-                gameComponents.add(component);
-            }
+    public static void addSlotPosition(Vector2 position, boolean withArc) {
+        if (withArc) {
+            slotWithArcPositions.add(position);
+        } else {
+            slotPositions.add(position);
         }
     }
 
-    public List<Ball> getBlueBalls() {
+    public static void addComponent(Vector2 position) {
+
+        List<Vector2> SlotPositions = new ArrayList<>(slotWithArcPositions);
+        SlotPositions.addAll(slotPositions);
+
+
+        for (Vector2 slotPosition : SlotPositions) {
+            if (position.dst(slotPosition) < GameConstant.CELL_SIZE.get() / 2) {
+                if (canPlaceComponent(slotPosition, slotWithArcPositions.contains(slotPosition))) {
+                    GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
+                    components.put(slotPosition, component);
+                    break;
+                }
+            }
+        }
+
+
+    }
+
+    private static boolean canPlaceComponent(Vector2 slotPosition, boolean isWithArc) {
+        if (isWithArc) {
+            return canPlaceInWithArcSlot(selectedComponent);
+        } else {
+            return canPlaceInAnySlot(selectedComponent);
+        }
+    }
+
+    private static boolean canPlaceInWithArcSlot(String componentType) {
+        return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor") || componentType.equals("Gear");
+    }
+
+    private static boolean canPlaceInAnySlot(String componentType) {
+        return componentType.equals("Crossover") || componentType.equals("GearBit");
+    }
+
+
+
+
+
+    public static void setSelectedComponent(String componentType) {
+        selectedComponent = componentType;
+    }
+
+
+    public static List<Ball> getBlueBalls() {
         return blueBalls;
     }
 
-    public List<Ball> getRedBalls() {
+    public static List<Ball> getRedBalls() {
         return redBalls;
     }
 
-    public World getWorld() {
+    public static World getWorld() {
         return world;
     }
 
+    public static List<Vector2> getSlotPositions() {
+        return slotPositions;
+    }
+
+    public static List<Vector2> getSlotWithArcPositions() {
+        return slotWithArcPositions;
+    }
+
+    public static boolean isSlotWithArc(int row, int col) {
+        if (row == 0) {
+            return (col == 3 || col == 7);
+        }
+        if (row == 1) {
+            return (col > 1 && col < 9 && col % 2 == 0);
+        }
+        if (row >= 2 && row <= 9) {
+            if ((row % 2 == 0 && col % 2 == 1) || (row % 2 == 1 && col % 2 == 0)) {
+                return true;
+            }
+        }
+        if (row == 10 && col == 5) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSlot(int row, int col) {
+        if (row == 0) {
+            return (col == 2 || col == 4 || col == 6 || col == 8);
+        }
+        if (row == 1) {
+            return (col <= 9 && col % 2 == 1);
+        }
+        if (row >= 2 && row <= 9) {
+            if ((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Map<Vector2, GameComponents> getComponents() {
+        return components;
+    }
+
+
+    public static Body createBody(float x, float y, float width, float height, World world) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(x, y);
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2, height / 2);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.5f;
+        fixtureDef.restitution = 0.0f;
+
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        return body;
+    }
 
 }
