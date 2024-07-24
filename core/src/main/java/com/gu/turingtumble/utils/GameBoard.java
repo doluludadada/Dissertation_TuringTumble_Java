@@ -15,17 +15,19 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gu.turingtumble.gamecomponents.Ball;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.gu.turingtumble.gamecomponents.GameComponents;
+import com.gu.turingtumble.gamecomponents.Ramp;
 
 import java.util.Map;
 
 
-public class GameBoard implements Screen {
+public class GameBoard implements Screen, ContactListener {
 
     private static GameBoard gameBoard = null;
     private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private Box2DDebugRenderer debugRenderer;
     private Viewport viewport;
+    private SpriteBatch batch;
 
 
     private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.get();
@@ -33,13 +35,12 @@ public class GameBoard implements Screen {
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
-
-
-
     private GameBoard() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
         initialiseRenderers();
+        batch = new SpriteBatch();
+
     }
 
     public static GameBoard getInstance() {
@@ -53,6 +54,7 @@ public class GameBoard implements Screen {
     public void show() {
         GameManager.initialise();
         createCollisionLines();
+        GameManager.getWorld().setContactListener(this);
     }
 
     @Override
@@ -87,13 +89,14 @@ public class GameBoard implements Screen {
         shapeRenderer.dispose();
         GameManager.getWorld().dispose();
         debugRenderer.dispose();
+        batch.dispose();
     }
 
 
     private void update(float delta) {
+        handleInput();
         GameManager.updateGameLogic(delta);
         camera.update();
-        handleInput();
     }
 
     private void initialiseRenderers() {
@@ -115,18 +118,17 @@ public class GameBoard implements Screen {
 
     private void draw() {
 //        viewport.apply();
-
-        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
+//        set background to white
+//        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
 
         drawBoard();
-        drawBalls();
         drawComponents();
+//        drawBalls();
 
-        debugRenderer.render(GameManager.getWorld(), camera.combined);
-
+//        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -219,7 +221,7 @@ public class GameBoard implements Screen {
     }
 
     private void drawBoardSlot() {
-        float width = camera.viewportWidth + 400;
+        float width = camera.viewportWidth + GameConstant.UI_WIDTH.get();
         float height = camera.viewportHeight;
 
         float offsetX = (width - SLOT_NUMBER_WIDTH * CELL_SIZE) / 2;
@@ -273,14 +275,14 @@ public class GameBoard implements Screen {
 
 
     private void drawComponents() {
-        SpriteBatch batch = new SpriteBatch();
+        batch.begin();
         batch.setProjectionMatrix(camera.combined);
         for (Map.Entry<Vector2, GameComponents> entry : GameManager.getComponents().entrySet()) {
             GameComponents component = entry.getValue();
             Vector2 position = entry.getKey();
             component.draw(batch, position.x, position.y);
         }
-        batch.dispose();
+        batch.end();
     }
 
 
@@ -311,6 +313,50 @@ public class GameBoard implements Screen {
     public float getCameraHeight() {
         return camera.viewportHeight;
     }
+
+    @Override
+    public void beginContact(Contact contact) {
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        Object userDataA = fixtureA.getBody().getUserData();
+        Object userDataB = fixtureB.getBody().getUserData();
+
+        if (userDataA instanceof Ramp) {
+            ((Ramp) userDataA).rotateRamp();
+        }
+
+        if (userDataB instanceof Ramp) {
+            ((Ramp) userDataB).rotateRamp();
+        }
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        Object userDataA = fixtureA.getBody().getUserData();
+        Object userDataB = fixtureB.getBody().getUserData();
+
+        if (userDataA instanceof Ramp) {
+            ((Ramp) userDataA).resetRamp();
+        }
+
+        if (userDataB instanceof Ramp) {
+            ((Ramp) userDataB).resetRamp();
+        }
+    }
+
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+
+    }
+
 
 
 }

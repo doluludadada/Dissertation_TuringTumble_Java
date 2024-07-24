@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Ball {
     private Body body;
     private Color ballColour;
-    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 6f;
+    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 10f;
 
 
     public Ball(World world, Color colour, float x, float y) {

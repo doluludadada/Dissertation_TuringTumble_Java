@@ -22,8 +22,6 @@ public class GameManager {
     private static List<Vector2> slotPositions = new ArrayList<>();
     private static List<Vector2> slotWithArcPositions = new ArrayList<>();
 
-
-
     public static void initialise() {
         initialiseWorld();
         initialiseBalls();
@@ -58,6 +56,10 @@ public class GameManager {
         // 2：位置迭代的次數，用於更準確地計算物體的位置
         world.step(1 / 30f, 6, 2);
 
+        for (GameComponents component : components.values()) {
+            component.update(delta);
+        }
+
     }
 
     public static void addSlotPosition(Vector2 position, boolean withArc) {
@@ -73,12 +75,12 @@ public class GameManager {
         List<Vector2> SlotPositions = new ArrayList<>(slotWithArcPositions);
         SlotPositions.addAll(slotPositions);
 
-
         for (Vector2 slotPosition : SlotPositions) {
             if (position.dst(slotPosition) < GameConstant.CELL_SIZE.get() / 2) {
                 if (canPlaceComponent(slotPosition, slotWithArcPositions.contains(slotPosition))) {
                     GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
                     components.put(slotPosition, component);
+                    component.update(0);
                     break;
                 }
             }
@@ -88,6 +90,9 @@ public class GameManager {
     }
 
     private static boolean canPlaceComponent(Vector2 slotPosition, boolean isWithArc) {
+        if (selectedComponent == null) {
+            return false;
+        }
         if (isWithArc) {
             return canPlaceInWithArcSlot(selectedComponent);
         } else {
@@ -96,16 +101,13 @@ public class GameManager {
     }
 
     private static boolean canPlaceInWithArcSlot(String componentType) {
-        return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor") || componentType.equals("Gear");
+        return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor")
+            || componentType.equals("Gear")||componentType.equals("Crossover") || componentType.equals("GearBit");
     }
 
     private static boolean canPlaceInAnySlot(String componentType) {
         return componentType.equals("Crossover") || componentType.equals("GearBit");
     }
-
-
-
-
 
     public static void setSelectedComponent(String componentType) {
         selectedComponent = componentType;
