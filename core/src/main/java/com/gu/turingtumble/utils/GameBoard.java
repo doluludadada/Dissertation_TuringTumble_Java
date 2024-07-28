@@ -12,10 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.gu.turingtumble.gamecomponents.Ball;
+import com.gu.turingtumble.gamecomponents.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.gu.turingtumble.gamecomponents.GameComponents;
-import com.gu.turingtumble.gamecomponents.Ramp;
 
 import java.util.Map;
 
@@ -105,14 +103,35 @@ public class GameBoard implements Screen, ContactListener {
     }
 
     private void handleInput() {
-
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
+            handleBallStopperClick(touchPos);
             GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
             System.out.println(touchPos.x + " " + touchPos.y);
         }
+    }
 
+
+    private void handleBallStopperClick(Vector3 touchPos) {
+        BallStopper redBallStopper = GameManager.getRedBallStopper();
+        BallStopper blueBallStopper = GameManager.getBlueBallStopper();
+
+        if (redBallStopper != null && isTouchingBallStopper(touchPos, redBallStopper)) {
+            redBallStopper.toggle();
+            return;
+        }
+        if (blueBallStopper != null && isTouchingBallStopper(touchPos, blueBallStopper)) {
+            blueBallStopper.toggle();
+            return;
+        }
+    }
+
+
+    private boolean isTouchingBallStopper(Vector3 touchPos, BallStopper ballStopper) {
+        Vector2 stopperPos = ballStopper.getBody().getPosition();
+        float touchRadius = BallStopper.RADIUS * 1.5f;
+        return stopperPos.dst(new Vector2(touchPos.x, touchPos.y)) < touchRadius;
     }
 
 
@@ -126,9 +145,10 @@ public class GameBoard implements Screen, ContactListener {
 
         drawBoard();
         drawComponents();
+        drawBallStoppers();
         drawBalls();
 
-//        debugRenderer.render(GameManager.getWorld(), camera.combined);
+        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -211,9 +231,9 @@ public class GameBoard implements Screen, ContactListener {
         float[][] Lines = {
             {width / 2, height, width / 2, height - 50},                                                                          // 上中線
             {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                                                    // 上左斜線
-            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
             {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                                                    // 右上斜線
-            {width, height - 100, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                        // 右下斜線
+            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
+            {width, height - 25, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                         // 右下斜線
             {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                                  // 右下斜線
             {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
         };
@@ -285,6 +305,19 @@ public class GameBoard implements Screen, ContactListener {
         batch.end();
     }
 
+    private void drawBallStoppers() {
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        BallStopper redBallStopper = GameManager.getRedBallStopper();
+        BallStopper blueBallStopper = GameManager.getBlueBallStopper();
+
+        if (redBallStopper != null) {
+            redBallStopper.draw(shapeRenderer, redBallStopper.getBody().getPosition().x, redBallStopper.getBody().getPosition().y);
+        }
+        if (blueBallStopper != null) {
+            blueBallStopper.draw(shapeRenderer, blueBallStopper.getBody().getPosition().x, blueBallStopper.getBody().getPosition().y);
+        }
+    }
+
 
     private void createEdge(float x1, float y1, float x2, float y2) {
         BodyDef bodyDef = new BodyDef();
@@ -314,19 +347,22 @@ public class GameBoard implements Screen, ContactListener {
         return camera.viewportHeight;
     }
 
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        Object userDataA = fixtureA.getBody().getUserData();
-        Object userDataB = fixtureB.getBody().getUserData();
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
+        Object userDataA = bodyA.getUserData();
+        Object userDataB = bodyB.getUserData();
 
-        if (userDataA instanceof Ramp) {
-            ((Ramp) userDataA).rotateRamp();
-        }
-
-        if (userDataB instanceof Ramp) {
-            ((Ramp) userDataB).rotateRamp();
+        if (userDataA instanceof Ramp && userDataB instanceof Ball) {
+            Ramp ramp = (Ramp) userDataA;
+            ramp.beginContact(bodyB);
+        } else if (userDataB instanceof Ramp && userDataA instanceof Ball) {
+            Ramp ramp = (Ramp) userDataB;
+            ramp.beginContact(bodyA);
         }
     }
 
@@ -334,15 +370,17 @@ public class GameBoard implements Screen, ContactListener {
     public void endContact(Contact contact) {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        Object userDataA = fixtureA.getBody().getUserData();
-        Object userDataB = fixtureB.getBody().getUserData();
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
+        Object userDataA = bodyA.getUserData();
+        Object userDataB = bodyB.getUserData();
 
-        if (userDataA instanceof Ramp) {
-            ((Ramp) userDataA).resetRamp();
-        }
-
-        if (userDataB instanceof Ramp) {
-            ((Ramp) userDataB).resetRamp();
+        if (userDataA instanceof Ramp && userDataB instanceof Ball) {
+            Ramp ramp = (Ramp) userDataA;
+            ramp.endContact(bodyB);
+        } else if (userDataB instanceof Ramp && userDataA instanceof Ball) {
+            Ramp ramp = (Ramp) userDataB;
+            ramp.endContact(bodyA);
         }
     }
 
@@ -356,7 +394,6 @@ public class GameBoard implements Screen, ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
-
 
 
 }

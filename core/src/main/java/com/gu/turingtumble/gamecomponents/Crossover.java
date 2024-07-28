@@ -67,10 +67,6 @@ public class Crossover implements GameComponents {
         System.out.println("crossover origin: " + crossoverOrigin.x + ", " + crossoverOrigin.y);
     }
 
-    @Override
-    public Vector2 getPosition() {
-        return crossoverBody.getPosition();
-    }
 
     @Override
     public void update(float delta) {

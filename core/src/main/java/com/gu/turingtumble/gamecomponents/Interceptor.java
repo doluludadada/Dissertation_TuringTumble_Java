@@ -63,10 +63,6 @@ public class Interceptor implements GameComponents {
         System.out.println("crossover origin: " + interceptorOrigin.x + ", " + interceptorOrigin.y);
     }
 
-    @Override
-    public Vector2 getPosition() {
-        return interceptorBody.getPosition();
-    }
 
     @Override
     public void update(float delta) {

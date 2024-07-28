@@ -12,12 +12,12 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 
 public class GameUI {
     private Stage stage;
+    private boolean isMirrorSelected = false; // 用於選擇鏡像模式
 
     public GameUI(Stage stage) {
         this.stage = stage;
         createUI();
     }
-
 
     private void createUI() {
         Table table = new Table();
@@ -28,30 +28,48 @@ public class GameUI {
         table.add(window).expand().top().left();
 
         // Adding component selection buttons
-        addButton(window, "Ramp");
-        addButton(window, "Crossover");
-        addButton(window, "Bit");
-        addButton(window, "Interceptor");
-        addButton(window, "Gear");
-        addButton(window, "GearBit");
+        addComponentButton(window, "Ramp");
+        addComponentButton(window, "Crossover");
+        addComponentButton(window, "Bit");
+        addComponentButton(window, "Interceptor");
+        addComponentButton(window, "Gear");
+        addComponentButton(window, "GearBit");
 
         window.pack();
         window.setPosition(10, Gdx.graphics.getHeight() - window.getHeight());
     }
 
-    private void addButton(VisWindow window, final String componentType) {
+    private void addComponentButton(VisWindow window, final String componentType) {
+        Table buttonTable = new Table();
+
         VisTextButton button = new VisTextButton("Add " + componentType);
         button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameManager.setSelectedComponent(componentType);
+                GameManager.setIsMirrorSelected(false); //
             }
         });
-        window.add(button).pad(10);
-        window.row();
+
+        VisTextButton mirrorButton = new VisTextButton("M");
+        mirrorButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                GameManager.setSelectedComponent(componentType);
+                GameManager.setIsMirrorSelected(true); //
+            }
+        });
+
+        buttonTable.add(button).pad(10);
+        buttonTable.add(mirrorButton).pad(10);
+
+        window.add(buttonTable).row();
     }
 
 
+    public boolean isMirrorSelected() {
+        return isMirrorSelected;
+    }
 
     public void render() {
         stage.act(Gdx.graphics.getDeltaTime());
@@ -59,9 +77,7 @@ public class GameUI {
     }
 
     public void resize(int width, int height) {
-
         stage.getViewport().update(GameConstant.UI_WIDTH.get(), height, true);
-
     }
 
     public void dispose() {
@@ -69,6 +85,3 @@ public class GameUI {
         VisUI.dispose();
     }
 }
-
-
-

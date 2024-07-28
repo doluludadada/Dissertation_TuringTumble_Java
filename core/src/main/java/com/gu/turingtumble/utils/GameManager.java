@@ -17,14 +17,19 @@ public class GameManager {
     private static List<Ball> blueBalls = new ArrayList<>();
     private static Map<Vector2, GameComponents> components = new HashMap<>();
     private static String selectedComponent;
+    private static BallStopper redBallStopper;
+    private static BallStopper blueBallStopper;
 
 
     private static List<Vector2> slotPositions = new ArrayList<>();
     private static List<Vector2> slotWithArcPositions = new ArrayList<>();
+    private static boolean isMirrorSelected = false;
+
 
     public static void initialise() {
         initialiseWorld();
         initialiseBalls();
+        initialiseBallStoppers();
     }
 
 
@@ -33,6 +38,7 @@ public class GameManager {
         world = new World(new Vector2(0, -9.8f), true);
     }
 
+
     public static void initialiseBalls() {
         float centreX = (GameBoard.getInstance().getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
         float startY = GameBoard.getInstance().getCameraHeight() - 30;
@@ -40,21 +46,41 @@ public class GameManager {
         float redStartX = centreX + GameConstant.CELL_SIZE.get();
         float blueStartX = centreX - GameConstant.CELL_SIZE.get();
 
+        Vector2 ballGravity = new Vector2(0, -19.8f);
 
         for (int i = 0; i < GameConstant.RED_BALL_COUNT.get(); i++) {
-            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i));
+            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i, ballGravity));
         }
         for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.get(); i++) {
-            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
+            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i, ballGravity));
         }
 
+
     }
+
+    public static void initialiseBallStoppers() {
+        float redX = (float) (GameConstant.WINDOW_WIDTH.get() - 2.4 * GameConstant.CELL_SIZE.get());
+        float blueX = (float) (GameConstant.UI_WIDTH.get() + 2.4 * GameConstant.CELL_SIZE.get());
+        float pos_Y = GameConstant.WINDOW_HEIGHT.get() - 2 * GameConstant.CELL_SIZE.get();
+
+        redBallStopper = new BallStopper(redX, pos_Y, world);
+        blueBallStopper = new BallStopper(blueX, pos_Y, world);
+
+    }
+
+
+    public static void setGravity(Vector2 gravity) {
+        if (world != null) {
+            world.setGravity(gravity);
+        }
+    }
+
 
     public static void updateGameLogic(float delta) {
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
         // 6：速度迭代的次數，用於更準確地計算物體的速度
         // 2：位置迭代的次數，用於更準確地計算物體的位置
-        world.step(1 / 30f, 6, 2);
+        world.step(1 / 30f, 6, 10);
 
         for (GameComponents component : components.values()) {
             component.update(delta);
@@ -70,8 +96,8 @@ public class GameManager {
         }
     }
 
-    public static void addComponent(Vector2 position) {
 
+    public static void addComponent(Vector2 position) {
         List<Vector2> SlotPositions = new ArrayList<>(slotWithArcPositions);
         SlotPositions.addAll(slotPositions);
 
@@ -85,8 +111,6 @@ public class GameManager {
                 }
             }
         }
-
-
     }
 
     private static boolean canPlaceComponent(Vector2 slotPosition, boolean isWithArc) {
@@ -102,7 +126,7 @@ public class GameManager {
 
     private static boolean canPlaceInWithArcSlot(String componentType) {
         return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor")
-            || componentType.equals("Gear")||componentType.equals("Crossover") || componentType.equals("GearBit");
+            || componentType.equals("Gear") || componentType.equals("Crossover") || componentType.equals("GearBit");
     }
 
     private static boolean canPlaceInAnySlot(String componentType) {
@@ -132,6 +156,14 @@ public class GameManager {
 
     public static List<Vector2> getSlotWithArcPositions() {
         return slotWithArcPositions;
+    }
+
+    public static boolean isMirrorSelected() {
+        return isMirrorSelected;
+    }
+
+    public static void setIsMirrorSelected(boolean isMirrorSelected) {
+        GameManager.isMirrorSelected = isMirrorSelected;
     }
 
     public static boolean isSlotWithArc(int row, int col) {
@@ -194,4 +226,24 @@ public class GameManager {
         return body;
     }
 
+    public static Body createBody(World world, BodyDef.BodyType bodyType, float pos_x, float pos_y, String name) {
+        // 1. Create a BodyDef
+        BodyDef bd = new BodyDef();
+        bd.type = bodyType;
+        bd.position.set(pos_x, pos_y);
+
+        // 2. Create a Body
+        Body body = world.createBody(bd);
+        body.setUserData(name);
+
+        return body;
+    }
+
+    public static BallStopper getRedBallStopper() {
+        return redBallStopper;
+    }
+
+    public static BallStopper getBlueBallStopper() {
+        return blueBallStopper;
+    }
 }

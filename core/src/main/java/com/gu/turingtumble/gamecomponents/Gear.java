@@ -9,10 +9,6 @@ public class Gear implements GameComponents {
 
     }
 
-    @Override
-    public Vector2 getPosition() {
-        return null;
-    }
 
     @Override
     public void update(float delta) {

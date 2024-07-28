@@ -2,6 +2,7 @@ package com.gu.turingtumble.gamecomponents;
 
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.gu.turingtumble.utils.GameConstant;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,19 +11,21 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Ball {
     private Body body;
     private Color ballColour;
-    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 10f;
+    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 7f;
+    private Vector2 customGravity;
 
 
-    public Ball(World world, Color colour, float x, float y) {
-
+    public Ball(World world, Color colour, float x, float y, Vector2 customGravity) {
         this.ballColour = colour;
+        this.customGravity = customGravity;
 
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
-        body = world.createBody(bodyDef);
+        BodyDef bd = new BodyDef();
+        bd.type = BodyDef.BodyType.DynamicBody;
+        bd.position.set(x, y);
+        body = world.createBody(bd);
 
+        bd.bullet = true;
 
         CircleShape shape = new CircleShape();
         shape.setRadius(RADIUS);
@@ -30,12 +33,16 @@ public class Ball {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.5f;
+        fixtureDef.density = 2f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.6f;
 
         body.createFixture(fixtureDef);
         shape.dispose();
+
+//        For contact detect
+        body.setUserData(this);
+
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

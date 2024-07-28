@@ -7,8 +7,8 @@ public enum GameConstant {
     SLOT_NUMBER_WIDTH(11),                                          // number of slot widths
     SLOT_NUMBER_HEIGHT(11),                                         // number of slot height
     CELL_SIZE(60),                                                  // gap size
-    RED_BALL_COUNT(5),                                              //
-    BLUE_BALL_COUNT(5),                                             //
+    RED_BALL_COUNT(8),                                              //
+    BLUE_BALL_COUNT(8),                                             //
     GAME_WIDTH(800),                                                //
     UI_WIDTH(400),                                                  //
     WINDOW_WIDTH(GAME_WIDTH.get() + UI_WIDTH.get()),                //
