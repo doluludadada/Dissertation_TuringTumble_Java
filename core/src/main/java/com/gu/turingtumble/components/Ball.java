@@ -1,4 +1,4 @@
-package com.gu.turingtumble.gamecomponents;
+package com.gu.turingtumble.components;
 
 
 import com.badlogic.gdx.graphics.Color;

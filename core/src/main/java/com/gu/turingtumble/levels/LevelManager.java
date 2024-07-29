@@ -1,40 +1,27 @@
 package com.gu.turingtumble.levels;
 
+import com.gu.turingtumble.utils.GameManager;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class LevelManager {
     private static Level currentLevel;
+    private static Set<Integer> unlockedLevels = new HashSet<>();
+
+    static {
+        unlockedLevels.add(1);
+    }
 
     public static void loadLevel(int levelNumber) {
+        GameManager.clearComponents();
+
         switch (levelNumber) {
             case 1:
                 currentLevel = new Level1();
                 break;
-//            case 2:
-//                currentLevel = new Level2();
-//                break;
-            // Add cases for levels 3 to 10
-            case 3:
-                // currentLevel = new Level3();
-                break;
-            case 4:
-                // currentLevel = new Level4();
-                break;
-            case 5:
-                // currentLevel = new Level5();
-                break;
-            case 6:
-                // currentLevel = new Level6();
-                break;
-            case 7:
-                // currentLevel = new Level7();
-                break;
-            case 8:
-                // currentLevel = new Level8();
-                break;
-            case 9:
-                // currentLevel = new Level9();
-                break;
-            case 10:
-                // currentLevel = new Level10();
+            case 2:
+                // currentLevel = new Level2();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown level: " + levelNumber);
@@ -44,5 +31,13 @@ public class LevelManager {
 
     public static Level getCurrentLevel() {
         return currentLevel;
+    }
+
+    public static boolean isLevelUnlocked(int levelNumber) {
+        return unlockedLevels.contains(levelNumber);
+    }
+
+    public static void unlockLevel(int levelNumber) {
+        unlockedLevels.add(levelNumber);
     }
 }

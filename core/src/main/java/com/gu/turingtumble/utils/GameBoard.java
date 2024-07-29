@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -12,15 +11,21 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.gu.turingtumble.gamecomponents.*;
+import com.gu.turingtumble.MainGame;
+import com.gu.turingtumble.components.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.gu.turingtumble.game.ui.*;
 
 import java.util.Map;
 
 
 public class GameBoard implements Screen, ContactListener {
 
-    private static GameBoard gameBoard = null;
+
+    private MainGame game;
+    private GameUIManager uiManager;
+    private Stage gameStage;
     private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private Box2DDebugRenderer debugRenderer;
@@ -33,32 +38,30 @@ public class GameBoard implements Screen, ContactListener {
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
-    private GameBoard() {
+    public  GameBoard(MainGame game) {
+        this.game = game;
+        this.uiManager = game.getUiManager();
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
         initialiseRenderers();
         batch = new SpriteBatch();
-
     }
 
-    public static GameBoard getInstance() {
-        if (GameBoard.gameBoard == null) {
-            GameBoard.gameBoard = new GameBoard();
-        }
-        return GameBoard.gameBoard;
-    }
 
     @Override
     public void show() {
-        GameManager.initialise();
-        createCollisionLines();
+        GameManager.initialise(this);
         GameManager.getWorld().setContactListener(this);
+        Gdx.input.setInputProcessor(uiManager.getGameStage());
+        createCollisionLines();
+        uiManager.showGameUI();
     }
 
     @Override
     public void render(float delta) {
         update(delta);
         draw();
+        gameStage.getViewport().apply();
     }
 
 
@@ -67,7 +70,6 @@ public class GameBoard implements Screen, ContactListener {
         viewport.update(width, height, true);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-
     }
 
     @Override
@@ -139,15 +141,13 @@ public class GameBoard implements Screen, ContactListener {
 //        viewport.apply();
 //        set background to white
 //        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
-
         drawBoard();
         drawComponents();
         drawBallStoppers();
         drawBalls();
-
         debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
@@ -194,7 +194,6 @@ public class GameBoard implements Screen, ContactListener {
 
         float[][] Lines = getLine(width, height);
 
-
         for (float[] line : Lines) {
             shapeRenderer.line(line[0], line[1], line[2], line[3]);
         }
@@ -215,7 +214,7 @@ public class GameBoard implements Screen, ContactListener {
             createEdge(line[0], line[1], line[2], line[3]);
         }
 
-        // Add border lines
+        //border lines
         createEdge(GameConstant.UI_WIDTH.get(), 0, GameConstant.UI_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get()); // left border
         createEdge(GameConstant.UI_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get()); // top border
         createEdge(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), GameConstant.WINDOW_WIDTH.get(), 0); // right border
@@ -335,7 +334,6 @@ public class GameBoard implements Screen, ContactListener {
 
         body.createFixture(fixtureDef);
         shape.dispose();
-
     }
 
 
@@ -394,6 +392,4 @@ public class GameBoard implements Screen, ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
     }
-
-
 }

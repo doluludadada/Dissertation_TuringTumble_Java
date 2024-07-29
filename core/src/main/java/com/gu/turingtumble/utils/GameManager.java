@@ -3,7 +3,7 @@ package com.gu.turingtumble.utils;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.gu.turingtumble.gamecomponents.*;
+import com.gu.turingtumble.components.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,9 +26,11 @@ public class GameManager {
     private static boolean isMirrorSelected = false;
 
 
-    public static void initialise() {
-        initialiseWorld();
-        initialiseBalls();
+    public static void initialise(GameBoard gameBoard) {
+        if (world == null) {
+            initialiseWorld();
+        }
+        initialiseBalls(gameBoard);
         initialiseBallStoppers();
     }
 
@@ -39,9 +41,9 @@ public class GameManager {
     }
 
 
-    public static void initialiseBalls() {
-        float centreX = (GameBoard.getInstance().getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
-        float startY = GameBoard.getInstance().getCameraHeight() - 30;
+    public static void initialiseBalls(GameBoard gameBoard) {
+        float centreX = (gameBoard.getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
+        float startY = gameBoard.getCameraHeight() - 30;
 
         float redStartX = centreX + GameConstant.CELL_SIZE.get();
         float blueStartX = centreX - GameConstant.CELL_SIZE.get();
@@ -103,6 +105,9 @@ public class GameManager {
 
         for (Vector2 slotPosition : SlotPositions) {
             if (position.dst(slotPosition) < GameConstant.CELL_SIZE.get() / 2) {
+                if (components.containsKey(slotPosition)) {
+                    return;
+                }
                 if (canPlaceComponent(slotPosition, slotWithArcPositions.contains(slotPosition))) {
                     GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
                     components.put(slotPosition, component);
@@ -246,4 +251,9 @@ public class GameManager {
     public static BallStopper getBlueBallStopper() {
         return blueBallStopper;
     }
+
+    public static void clearComponents() {
+        components.clear();
+    }
+
 }

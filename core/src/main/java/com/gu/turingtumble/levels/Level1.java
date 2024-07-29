@@ -26,4 +26,9 @@ public class Level1 implements Level {
     public void reset() {
         initialize();
     }
+
+    @Override
+    public void onComplete() {
+        LevelManager.unlockLevel(2);
+    }
 }
