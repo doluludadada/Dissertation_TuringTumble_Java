@@ -2,12 +2,10 @@ package com.gu.turingtumble.game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gu.turingtumble.utils.GameConstant;
 import com.kotcrab.vis.ui.VisUI;
-import com.kotcrab.vis.ui.widget.VisTextButton;
-import com.kotcrab.vis.ui.widget.VisWindow;
+
 import com.gu.turingtumble.MainGame;
 
 
@@ -17,7 +15,6 @@ import com.gu.turingtumble.MainGame;
  */
 
 public class GameUIManager {
-    private static GameUIManager instance;
     private Stage uiStage;
     private Stage gameStage;
     private MainGame game;

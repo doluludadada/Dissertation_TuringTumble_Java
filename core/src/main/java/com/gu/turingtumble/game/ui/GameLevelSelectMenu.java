@@ -4,12 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.levels.LevelManager;
 import com.gu.turingtumble.utils.GameBoard;
+import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
@@ -26,7 +25,7 @@ public class GameLevelSelectMenu implements Screen {
     }
 
     private void createUI() {
-        Table table = new Table();
+        VisTable table = new VisTable();
         table.setFillParent(true);
         uiManager.getUiStage().addActor(table);
 

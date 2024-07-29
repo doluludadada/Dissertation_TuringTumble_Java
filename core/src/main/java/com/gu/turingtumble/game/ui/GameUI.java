@@ -2,13 +2,13 @@ package com.gu.turingtumble.game.ui;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gu.turingtumble.utils.GameConstant;
 import com.gu.turingtumble.utils.GameManager;
-import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
@@ -16,7 +16,7 @@ import com.kotcrab.vis.ui.widget.VisWindow;
  * GameUI class for creating in game user interface.
  */
 
-public class GameUI {
+public class GameUI implements Screen {
 
     private Stage stage;
 
@@ -90,13 +90,36 @@ public class GameUI {
         window.add(buttonTable).row();
     }
 
-    public void render() {
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public void render(float delta) {
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
     }
 
+    @Override
     public void resize(int width, int height) {
         stage.getViewport().update(GameConstant.UI_WIDTH.get(), height, true);
+    }
+
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
     }
 
     public void dispose() {

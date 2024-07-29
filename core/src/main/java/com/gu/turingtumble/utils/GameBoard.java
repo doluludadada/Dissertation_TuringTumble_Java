@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.components.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.gu.turingtumble.game.ui.*;
 
 import java.util.Map;
@@ -23,14 +22,13 @@ import java.util.Map;
 public class GameBoard implements Screen, ContactListener {
 
 
-    private MainGame game;
-    private GameUIManager uiManager;
-    private Stage gameStage;
+    private final MainGame game;
+    private final GameUIManager uiManager;
     private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
     private Box2DDebugRenderer debugRenderer;
-    private Viewport viewport;
-    private SpriteBatch batch;
+    private final Viewport viewport;
+    private final SpriteBatch batch;
 
 
     private final int SLOT_NUMBER_WIDTH = GameConstant.SLOT_NUMBER_WIDTH.get();
@@ -38,7 +36,7 @@ public class GameBoard implements Screen, ContactListener {
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
-    public  GameBoard(MainGame game) {
+    public GameBoard(MainGame game) {
         this.game = game;
         this.uiManager = game.getUiManager();
         camera = new OrthographicCamera();
@@ -61,7 +59,6 @@ public class GameBoard implements Screen, ContactListener {
     public void render(float delta) {
         update(delta);
         draw();
-        gameStage.getViewport().apply();
     }
 
 
