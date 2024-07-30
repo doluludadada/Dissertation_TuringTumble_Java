@@ -6,21 +6,26 @@ import com.gu.turingtumble.utils.GameManager;
 public class Level1 implements Level {
     @Override
     public void initialize() {
-
-        GameManager.setSelectedComponent("Ramp");
-        GameManager.addComponent(new Vector2(0, 4));
-        GameManager.addComponent(new Vector2(2, 4));
-        GameManager.addComponent(new Vector2(4, 4));
-        GameManager.addComponent(new Vector2(6, 4));
-        GameManager.addComponent(new Vector2(8, 4));
-
-        GameManager.setSelectedComponent("Ramp");
-        GameManager.setIsMirrorSelected(true);
-        GameManager.addComponent(new Vector2(1, 5));
-        GameManager.setIsMirrorSelected(false); // 重設 Mirror 模式
+        System.out.println("level1 initialized");
+        putComponent();
     }
 
+    private void putComponent() {
+        System.out.println("test message putComponent");
+        // 固定生成的 Ramp
+        GameManager.setSelectedComponent("Ramp");
+        GameManager.addComponent(0, 4);
+        GameManager.addComponent(2, 4);
+        GameManager.addComponent(4, 4);
+        GameManager.addComponent(6, 4);
+        GameManager.addComponent(8, 4);
 
+        // 鏡像 Ramp
+        GameManager.setIsMirrorSelected(true);
+        GameManager.addComponent(1, 5);
+        GameManager.setIsMirrorSelected(false);
+
+    }
 
     @Override
     public void reset() {

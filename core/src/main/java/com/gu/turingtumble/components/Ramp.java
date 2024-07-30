@@ -30,7 +30,7 @@ public class Ramp implements GameComponents {
     protected  Texture rampTexture;
     //    Data
     protected  static final float RAMP_WIDTH = 70f;
-    protected  static final float RAMP_HEIGHT = 70f;
+    protected  static final float RAMP_HEIGHT = 60f;
     protected  static final float ROTATION = (float) Math.toRadians(75);
     //    Functional
     protected  Set<Body> contactBodies = new HashSet<>();
@@ -53,9 +53,9 @@ public class Ramp implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 2;
-        fd.friction = 0.5f;
-        fd.restitution = 0.3f;
+        fd.density = 0.1f;
+        fd.friction = 10f;
+        fd.restitution = 0f;
 //        fd.isSensor = true;
 
         // 3. Create the body fixture automatically by using the loader.

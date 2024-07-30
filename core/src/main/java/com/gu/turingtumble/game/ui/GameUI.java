@@ -2,13 +2,12 @@ package com.gu.turingtumble.game.ui;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.gu.turingtumble.utils.GameConstant;
+import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
+import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
 
@@ -16,19 +15,18 @@ import com.kotcrab.vis.ui.widget.VisWindow;
  * GameUI class for creating in game user interface.
  */
 
-public class GameUI implements Screen {
-
+public class GameUI {
+    private final MainGame game;
     private Stage stage;
-
 
     /**
      * Constructor for GameUI. Initializes the stage and creates the UI.
      *
      * @param stage The stage where the UI elements will be added.
      */
-    public GameUI(Stage stage) {
+    public GameUI(MainGame game, Stage stage) {
+        this.game = game;
         this.stage = stage;
-        this.stage.clear();
         createUI();
     }
 
@@ -36,7 +34,7 @@ public class GameUI implements Screen {
      * Creates the UI layout and elements.
      */
     private void createUI() {
-        Table table = new Table();
+        VisTable table = new VisTable();
         table.setFillParent(true);
         stage.addActor(table);
 
@@ -64,7 +62,7 @@ public class GameUI implements Screen {
      * @param componentType The type of component the button will add.
      */
     private void addComponentButton(VisWindow window, final String componentType) {
-        Table buttonTable = new Table();
+        VisTable buttonTable = new VisTable();
 
         VisTextButton button = new VisTextButton("Add " + componentType);
         button.addListener(new ClickListener() {
@@ -90,39 +88,36 @@ public class GameUI implements Screen {
         window.add(buttonTable).row();
     }
 
-
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(stage);
+    /**
+     * Adds a back button to the window.
+     *
+     * @param window The window to which the button will be added.
+     */
+    private void addBackButton(VisWindow window) {
+        VisTextButton backButton = new VisTextButton("Back");
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.getUiManager().showLevelSelectMenu();
+            }
+        });
+        window.add(backButton).pad(10).row();
     }
 
-    @Override
-    public void render(float delta) {
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+    /**
+     * Adds a reset button to the window.
+     *
+     * @param window The window to which the button will be added.
+     */
+    private void addResetButton(VisWindow window) {
+        VisTextButton resetButton = new VisTextButton("Reset");
+        resetButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+//                GameManager.getCurrentLevel().reset();
+            }
+        });
+        window.add(resetButton).pad(10).row();
     }
 
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(GameConstant.UI_WIDTH.get(), height, true);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    public void dispose() {
-        stage.dispose();
-    }
 }

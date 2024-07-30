@@ -11,13 +11,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Ball {
     private Body body;
     private Color ballColour;
-    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 7f;
-    private Vector2 customGravity;
+    private static final float RADIUS = GameConstant.CELL_SIZE.get() / 8f;
+//    private Vector2 customGravity;
 
 
-    public Ball(World world, Color colour, float x, float y, Vector2 customGravity) {
+    public Ball(World world, Color colour, float x, float y) {
         this.ballColour = colour;
-        this.customGravity = customGravity;
+//        this.customGravity = customGravity;
 
 
         BodyDef bd = new BodyDef();
@@ -33,12 +33,13 @@ public class Ball {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 2f;
-        fixtureDef.friction = 0.4f;
-        fixtureDef.restitution = 0.6f;
+        fixtureDef.density = 0.1f;
+        fixtureDef.friction = 10f;
+        fixtureDef.restitution = 0f;
 
         body.createFixture(fixtureDef);
         shape.dispose();
+//        body.setGravityScale(1f);
 
 //        For contact detect
         body.setUserData(this);

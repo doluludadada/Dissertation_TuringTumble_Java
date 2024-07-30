@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -15,6 +16,7 @@ import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.components.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.gu.turingtumble.game.ui.*;
+import com.gu.turingtumble.levels.LevelManager;
 
 import java.util.Map;
 
@@ -22,7 +24,6 @@ import java.util.Map;
 public class GameBoard implements Screen, ContactListener {
 
 
-    private final MainGame game;
     private final GameUIManager uiManager;
     private final OrthographicCamera camera;
     private ShapeRenderer shapeRenderer;
@@ -37,7 +38,6 @@ public class GameBoard implements Screen, ContactListener {
 
 
     public GameBoard(MainGame game) {
-        this.game = game;
         this.uiManager = game.getUiManager();
         camera = new OrthographicCamera();
         viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
@@ -48,11 +48,10 @@ public class GameBoard implements Screen, ContactListener {
 
     @Override
     public void show() {
-        GameManager.initialise(this);
         GameManager.getWorld().setContactListener(this);
-        Gdx.input.setInputProcessor(uiManager.getGameStage());
-        createCollisionLines();
+        Gdx.input.setInputProcessor(uiManager.getUiStage());
         uiManager.showGameUI();
+
     }
 
     @Override
@@ -67,6 +66,8 @@ public class GameBoard implements Screen, ContactListener {
         viewport.update(width, height, true);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+        createCollisionLines();
+        GameManager.initialiseBalls(this);
     }
 
     @Override
@@ -135,15 +136,15 @@ public class GameBoard implements Screen, ContactListener {
 
 
     private void draw() {
-//        viewport.apply();
+        viewport.apply();
 //        set background to white
-//        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         drawBoard();
-        drawComponents();
         drawBallStoppers();
+        drawComponents();
         drawBalls();
         debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
@@ -248,7 +249,7 @@ public class GameBoard implements Screen, ContactListener {
         for (int row = 0; row < SLOT_NUMBER_HEIGHT; row++) {
             for (int col = 0; col < SLOT_NUMBER_WIDTH; col++) {
 
-                float x = col * CELL_SIZE + offsetX + CELL_SIZE / 2;
+                float x = col * CELL_SIZE + offsetX + (CELL_SIZE / 2f);
 
                 // Flipping the row index vertically
                 int flippedRow = SLOT_NUMBER_HEIGHT - row - 1;

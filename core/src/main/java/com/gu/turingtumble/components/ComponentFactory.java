@@ -13,6 +13,7 @@ public class ComponentFactory {
     }
 
     public static GameComponents createComponent(String type, float x, float y) {
+        System.out.println("Creating component of type: " + type + " at position: (" + x + ", " + y + ")");
         World world = GameManager.getWorld();
         Body slotBody = createSlotBody(x, y, world);
 

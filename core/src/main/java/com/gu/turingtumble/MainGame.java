@@ -5,8 +5,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.gu.turingtumble.game.ui.GameMainMenu;
 import com.gu.turingtumble.game.ui.GameUIManager;
+import com.gu.turingtumble.utils.GameManager;
 
 public class MainGame extends Game {
 
@@ -17,8 +17,9 @@ public class MainGame extends Game {
     public void create() {
         uiManager = new GameUIManager(this);
 
+        GameManager.initialise();
         // Set screen to MainMenu
-        setScreen(new GameMainMenu(this));
+        uiManager.showMainMenu();
     }
 
     @Override

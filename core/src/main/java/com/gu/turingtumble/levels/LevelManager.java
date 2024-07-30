@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LevelManager {
+
+
     private static Level currentLevel;
     private static Set<Integer> unlockedLevels = new HashSet<>();
 

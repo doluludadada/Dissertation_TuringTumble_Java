@@ -1,5 +1,6 @@
 package com.gu.turingtumble.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -10,27 +11,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gu.turingtumble.utils.GameConstant.*;
+
 
 public class GameManager {
     private static World world;
     private static List<Ball> redBalls = new ArrayList<>();
     private static List<Ball> blueBalls = new ArrayList<>();
+    private static Map<Vector2, Boolean> slotPositions = new HashMap<>(); // true for slots with arc, false for regular slots
     private static Map<Vector2, GameComponents> components = new HashMap<>();
     private static String selectedComponent;
     private static BallStopper redBallStopper;
     private static BallStopper blueBallStopper;
+    private static GameBoard gameBoard;
 
 
-    private static List<Vector2> slotPositions = new ArrayList<>();
-    private static List<Vector2> slotWithArcPositions = new ArrayList<>();
     private static boolean isMirrorSelected = false;
 
 
-    public static void initialise(GameBoard gameBoard) {
+    public static void initialise() {
         if (world == null) {
             initialiseWorld();
         }
-        initialiseBalls(gameBoard);
         initialiseBallStoppers();
     }
 
@@ -48,13 +50,13 @@ public class GameManager {
         float redStartX = centreX + GameConstant.CELL_SIZE.get();
         float blueStartX = centreX - GameConstant.CELL_SIZE.get();
 
-        Vector2 ballGravity = new Vector2(0, -19.8f);
+//        Vector2 ballGravity = new Vector2(0, -19.8f);
 
         for (int i = 0; i < GameConstant.RED_BALL_COUNT.get(); i++) {
-            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i, ballGravity));
+            redBalls.add(new Ball(world, Color.RED, redStartX, startY + i));
         }
         for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.get(); i++) {
-            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i, ballGravity));
+            blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
         }
 
 
@@ -82,7 +84,7 @@ public class GameManager {
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
         // 6：速度迭代的次數，用於更準確地計算物體的速度
         // 2：位置迭代的次數，用於更準確地計算物體的位置
-        world.step(1 / 30f, 6, 10);
+        world.step(1 / 15f, 6, 10);
 
         for (GameComponents component : components.values()) {
             component.update(delta);
@@ -91,24 +93,20 @@ public class GameManager {
     }
 
     public static void addSlotPosition(Vector2 position, boolean withArc) {
-        if (withArc) {
-            slotWithArcPositions.add(position);
-        } else {
-            slotPositions.add(position);
-        }
+        slotPositions.put(position, withArc);
     }
 
 
     public static void addComponent(Vector2 position) {
-        List<Vector2> SlotPositions = new ArrayList<>(slotWithArcPositions);
-        SlotPositions.addAll(slotPositions);
+        for (Map.Entry<Vector2, Boolean> entry : slotPositions.entrySet()) {
+            Vector2 slotPosition = entry.getKey();
+            boolean isWithArc = entry.getValue();
 
-        for (Vector2 slotPosition : SlotPositions) {
-            if (position.dst(slotPosition) < GameConstant.CELL_SIZE.get() / 2) {
+            if (position.dst(slotPosition) < CELL_SIZE.get() / 2) {
                 if (components.containsKey(slotPosition)) {
                     return;
                 }
-                if (canPlaceComponent(slotPosition, slotWithArcPositions.contains(slotPosition))) {
+                if (canPlaceComponent(slotPosition, isWithArc)) {
                     GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
                     components.put(slotPosition, component);
                     component.update(0);
@@ -117,6 +115,39 @@ public class GameManager {
             }
         }
     }
+
+
+    /**
+     * @param row
+     * @param col
+     */
+    public static void addComponent(int row, int col) {
+        Vector2 position = getSlotRowColPosition(row, col);     ///some problems
+        if (components.containsKey(position)) {
+            return;
+        }
+        GameComponents component = ComponentFactory.createComponent(selectedComponent, position.x, position.y);
+        components.put(position, component);
+        component.update(0);
+    }
+
+
+    public static Vector2 getSlotRowColPosition(int row, int col) {
+
+        float width = UI_WIDTH.get() + GAME_WIDTH.get();
+        float height = WINDOW_HEIGHT.get();
+        float offsetX = (width - SLOT_NUMBER_WIDTH.get() * CELL_SIZE.get()) / 2;
+        float offsetY = (height - SLOT_NUMBER_HEIGHT.get() * CELL_SIZE.get()) / 2;
+
+        // 根據行和列計算位置
+        float x = col * CELL_SIZE.get() + offsetX + (CELL_SIZE.get() / 2f) + 140;
+        int flippedRow = SLOT_NUMBER_HEIGHT.get() - row - 1;
+        float y = flippedRow * CELL_SIZE.get() + offsetY + (CELL_SIZE.get() / 2f) - 30;
+
+        return new Vector2(x, y);
+
+    }
+
 
     private static boolean canPlaceComponent(Vector2 slotPosition, boolean isWithArc) {
         if (selectedComponent == null) {
@@ -155,13 +186,6 @@ public class GameManager {
         return world;
     }
 
-    public static List<Vector2> getSlotPositions() {
-        return slotPositions;
-    }
-
-    public static List<Vector2> getSlotWithArcPositions() {
-        return slotWithArcPositions;
-    }
 
     public static boolean isMirrorSelected() {
         return isMirrorSelected;
@@ -254,6 +278,12 @@ public class GameManager {
 
     public static void clearComponents() {
         components.clear();
+    }
+
+    public static void resetBalls(GameBoard gb) {
+        redBalls.clear();
+        blueBalls.clear();
+        initialiseBalls(gb);
     }
 
 }

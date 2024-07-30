@@ -11,14 +11,12 @@ import com.gu.turingtumble.MainGame;
 
 /**
  * Manages all UI stages and rendering in the game.
- * Manages the creation, rendering, and disposal of UI elements.
  */
 
 public class GameUIManager {
     private Stage uiStage;
     private Stage gameStage;
     private MainGame game;
-
 
 
     /**
@@ -29,19 +27,30 @@ public class GameUIManager {
 
     public GameUIManager(MainGame game) {
         this.game = game;
+        initializeStages();
+        initializeVisUI();
+    }
+
+
+    private void initializeVisUI() {
+        if (!VisUI.isLoaded()) {
+            VisUI.load();
+        }
+    }
+
+
+    private void initializeStages() {
         uiStage = new Stage(new ScreenViewport());
         uiStage.getViewport().setWorldWidth(GameConstant.UI_WIDTH.get());
         uiStage.getViewport().setWorldHeight(GameConstant.WINDOW_HEIGHT.get());
 
-
         gameStage = new Stage(new ScreenViewport());
         gameStage.getViewport().setWorldWidth(GameConstant.GAME_WIDTH.get());
         gameStage.getViewport().setWorldHeight(GameConstant.WINDOW_HEIGHT.get());
-        if (!VisUI.isLoaded()) {
-            VisUI.load();
-        }
+
         Gdx.input.setInputProcessor(uiStage);
     }
+
 
     /**
      * Renders both the UI and game stages.
@@ -70,6 +79,7 @@ public class GameUIManager {
     public void dispose() {
         uiStage.dispose();
         gameStage.dispose();
+        VisUI.dispose();
     }
 
     /**
@@ -81,7 +91,18 @@ public class GameUIManager {
     }
 
     public void showGameUI() {
-        new GameUI(uiStage);
+        clear();
+        new GameUI(game, uiStage);
+    }
+
+    public void showMainMenu() {
+        clear();
+        new GameMainMenu(game, uiStage);
+    }
+
+    public void showLevelSelectMenu() {
+        clear();
+        new GameLevelSelectMenu(game, uiStage);
     }
 
     public Stage getUiStage() {
@@ -91,5 +112,7 @@ public class GameUIManager {
     public Stage getGameStage() {
         return gameStage;
     }
+
+
 
 }
