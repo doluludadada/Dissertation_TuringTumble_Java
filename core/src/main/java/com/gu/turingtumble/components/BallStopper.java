@@ -96,8 +96,4 @@ public class BallStopper {
         return body;
     }
 
-    public void dispose() {
-        shape.dispose();
-        GameManager.getWorld().destroyBody(body);
-    }
 }

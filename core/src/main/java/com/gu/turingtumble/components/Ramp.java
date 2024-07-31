@@ -22,19 +22,19 @@ import java.util.Set;
  */
 public class Ramp implements GameComponents {
     //    MODEL
-    protected  Body rampBody;
-    protected  Vector2 rampModelOrigin;
-    protected  RevoluteJoint revoluteJoint;
+    protected Body rampBody;
+    protected Vector2 rampModelOrigin;
+    protected RevoluteJoint revoluteJoint;
     //    Render
-    protected  Sprite rampSprite;
-    protected  Texture rampTexture;
+    protected Sprite rampSprite;
+    protected Texture rampTexture;
     //    Data
-    protected  static final float RAMP_WIDTH = 70f;
-    protected  static final float RAMP_HEIGHT = 60f;
-    protected  static final float ROTATION = (float) Math.toRadians(75);
+    protected static final float RAMP_WIDTH = 60f;
+    protected static final float RAMP_HEIGHT = 60f;
+    protected static final float ROTATION = (float) Math.toRadians(75);
     //    Functional
-    protected  Set<Body> contactBodies = new HashSet<>();
-    protected  boolean isScheduledToReset = false;
+    protected Set<Body> contactBodies = new HashSet<>();
+    protected boolean isScheduledToReset = false;
 
 
     /**
@@ -53,8 +53,8 @@ public class Ramp implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 0.1f;
-        fd.friction = 10f;
+        fd.density = 1f;
+        fd.friction = 1f;
         fd.restitution = 0f;
 //        fd.isSensor = true;
 
@@ -73,24 +73,24 @@ public class Ramp implements GameComponents {
         rampSprite.setOriginCenter();
     }
 
-    protected  void createRevoluteJoint(World world, Body slotBody) {
+    protected void createRevoluteJoint(World world, Body slotBody) {
         RevoluteJointDef jointDf = new RevoluteJointDef();
         // Create A（fixed point）
         jointDf.bodyA = slotBody;
-        jointDf.localAnchorA.set(slotBody.getPosition().x, slotBody.getPosition().y - 50);
+        jointDf.localAnchorA.set(slotBody.getPosition().x, slotBody.getPosition().y);
         // Create B（bit body）
         jointDf.bodyB = rampBody;
         jointDf.localAnchorB.set(rampBody.getPosition().x, rampBody.getPosition().y);
         // Create Joint
-        jointDf.initialize(rampBody, slotBody, rampBody.getPosition());
-        // Set Date
+        jointDf.initialize(rampBody, slotBody, slotBody.getPosition());
+        // Set Data
         jointDf.enableLimit = true;
         jointDf.lowerAngle = 0;
-        jointDf.upperAngle = 0;
+        jointDf.upperAngle = (float) Math.toRadians(25);
         //Motor
-        jointDf.enableMotor = true;
-        jointDf.motorSpeed = 3.0f;
-        jointDf.maxMotorTorque = 5.0f;
+        jointDf.enableMotor = false;
+        jointDf.motorSpeed = 1.0f;
+        jointDf.maxMotorTorque = 3.0f;
 
         revoluteJoint = (RevoluteJoint) world.createJoint(jointDf);
     }
@@ -131,12 +131,12 @@ public class Ramp implements GameComponents {
     }
 
     protected void resetRamp() {
-        revoluteJoint.setLimits(0, 0);
+        revoluteJoint.setLimits(0, (float) Math.toRadians(25));
         isScheduledToReset = false;
         System.out.println("leave contact, count: " + contactBodies.size());
     }
 
-    protected  void scheduleResetRamp() {
+    protected void scheduleResetRamp() {
         isScheduledToReset = true;
         Timer.schedule(new Timer.Task() {
             public void run() {

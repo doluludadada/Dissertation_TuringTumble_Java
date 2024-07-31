@@ -63,9 +63,9 @@ public class GameManager {
     }
 
     public static void initialiseBallStoppers() {
-        float redX = (float) (GameConstant.WINDOW_WIDTH.get() - 2.4 * GameConstant.CELL_SIZE.get());
-        float blueX = (float) (GameConstant.UI_WIDTH.get() + 2.4 * GameConstant.CELL_SIZE.get());
-        float pos_Y = GameConstant.WINDOW_HEIGHT.get() - 2 * GameConstant.CELL_SIZE.get();
+        float redX = (GameConstant.WINDOW_WIDTH.get() - 0.5f * GameConstant.CELL_SIZE.get());
+        float blueX = (GameConstant.UI_WIDTH.get() + 0.5f * GameConstant.CELL_SIZE.get());
+        float pos_Y = GameConstant.WINDOW_HEIGHT.get() - 1.4f * GameConstant.CELL_SIZE.get();
 
         redBallStopper = new BallStopper(redX, pos_Y, world);
         blueBallStopper = new BallStopper(blueX, pos_Y, world);

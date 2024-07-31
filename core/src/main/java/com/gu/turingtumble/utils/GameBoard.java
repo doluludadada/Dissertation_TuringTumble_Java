@@ -94,7 +94,14 @@ public class GameBoard implements Screen, ContactListener {
     private void update(float delta) {
         handleInput();
         GameManager.updateGameLogic(delta);
+        if (GameManager.getRedBallStopper() != null) {
+            GameManager.getRedBallStopper().update(delta);
+        }
+        if (GameManager.getBlueBallStopper() != null) {
+            GameManager.getBlueBallStopper().update(delta);
+        }
         camera.update();
+
     }
 
     private void initialiseRenderers() {
@@ -227,10 +234,10 @@ public class GameBoard implements Screen, ContactListener {
     */
         float[][] Lines = {
             {width / 2, height, width / 2, height - 50},                                                                          // 上中線
-            {width / 2, height - 50, width / 2 - CELL_SIZE * 4, height - 100},                                                    // 上左斜線
-            {width / 2, height - 50, width / 2 + CELL_SIZE * 4, height - 100},                                                    // 右上斜線
+            {width / 2, height - 50, width / 2 - CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                                                    // 上左斜線
+            {width / 2, height - 50, width / 2 + CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                                                    // 右上斜線
             {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
-            {width, height - 25, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                         // 右下斜線
+            {width, height + 10, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                         // 右下斜線
             {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                                  // 右下斜線
             {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
         };
