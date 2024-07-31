@@ -4,96 +4,112 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
 import com.gu.turingtumble.utils.GameManager;
 
 public class BallStopper {
-    //    MODEL
-    private Body body;
-    private CircleShape shape;
-    //    DATE
+    // Model
+    private final Body stopperBody;
+    private final World world;
+    // Data
     public static final float RADIUS = 24f;
-    private boolean active;
+    // Functional
+    private boolean shouldResetBallPosition;
+    private Body capturedBall;
 
 
-    public BallStopper(float pos_x, float pos_y, World world) {
-        createBody(pos_x, pos_y, world);
+    public BallStopper(float posX, float posY, World world) {
+        this.world = world;
+        this.stopperBody = createBody(posX, posY);
+        this.capturedBall = null;
+        this.shouldResetBallPosition = false;
     }
 
-    private void createBody(float pos_x, float pos_y, World world) {
+    private Body createBody(float posX, float posY) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(pos_x, pos_y);
-        body = world.createBody(bodyDef);
+        bodyDef.position.set(posX, posY);
+        Body body = world.createBody(bodyDef);
 
-        shape = new CircleShape();
+        CircleShape shape = new CircleShape();
         shape.setRadius(RADIUS);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.isSensor = false;
+        fixtureDef.isSensor = true;
         body.createFixture(fixtureDef);
+        shape.dispose();
 
         body.setUserData(this);
-        active = true;
-
-    }
-
-    public void toggle() {
-        // Toggle the active state
-        active = !active;
-        for (Fixture fixture : body.getFixtureList()) {
-            fixture.setSensor(active);
-        }
-
-        if (active) {
-            applyForceToBallsInRange();
-        }
-    }
-
-    private void applyForceToBallsInRange() {
-        World world = GameManager.getWorld();
-        Array<Body> bodies = new Array<>();
-        world.getBodies(bodies);
-        for (Body body : bodies) {
-            if (body.getUserData() instanceof Ball) {
-                Vector2 ballPos = body.getPosition();
-                Vector2 stopperPos = this.body.getPosition();
-                float distance = ballPos.dst(stopperPos);
-
-                if (distance < RADIUS * 2) {
-                    Vector2 force = new Vector2(0, 1f);
-                    body.applyLinearImpulse(force, ballPos, true);
-                }
-            }
-        }
-    }
-
-
-    public boolean isActive() {
-        return active;
-    }
-
-
-    public void draw(ShapeRenderer shapeRenderer, float x, float y) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        if (active) {
-            shapeRenderer.setColor(Color.GREEN);
-        } else {
-            shapeRenderer.setColor(Color.GRAY);
-        }
-        shapeRenderer.circle(x, y, RADIUS);
-        shapeRenderer.end();
-
-    }
-
-
-    public void update(float delta) {
-
-    }
-
-    public Body getBody() {
         return body;
     }
 
+
+    public void handleContact(Body ball) {
+        if (capturedBall == null) {
+            capturedBall = ball;
+            shouldResetBallPosition = true;
+        }
+    }
+
+    public void update() {
+        if (shouldResetBallPosition && capturedBall != null) {
+            shouldResetBallPosition = false;
+            setSensor(false); // Set sensor to false to prevent other balls from entering
+            System.out.println("Ball captured");
+        }
+
+        // Keep the captured ball at the stopper's position
+        if (capturedBall != null) {
+            capturedBall.setTransform(stopperBody.getPosition(), capturedBall.getAngle());
+            capturedBall.setLinearVelocity(Vector2.Zero);
+            capturedBall.setAngularVelocity(0);
+        }
+    }
+
+    public void launchBall() {
+        if (capturedBall != null) {
+            capturedBall.setLinearVelocity(new Vector2(0, -50f));
+            setSensor(true); // Set sensor to true to allow the next ball to be captured
+            System.out.println("Ball launched from: " + stopperBody.getPosition());
+            capturedBall = null;
+            GameManager.giveBallEnergy();
+        }
+    }
+
+    private void setSensor(boolean isSensor) {
+        for (Fixture fixture : stopperBody.getFixtureList()) {
+            fixture.setSensor(isSensor);
+        }
+        System.out.println("Setting stopper sensor to: " + isSensor);
+    }
+
+    public void draw(ShapeRenderer shapeRenderer) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(getColor());
+        Vector2 position = stopperBody.getPosition();
+        shapeRenderer.circle(position.x, position.y, RADIUS);
+        shapeRenderer.end();
+    }
+
+    private Color getColor() {
+        if (capturedBall != null) {
+            return Color.YELLOW;
+        } else {
+            return Color.GREEN;
+        }
+    }
+
+    public Body getStopperBody() {
+        return stopperBody;
+    }
+
+
 }
+
+
+
+
+
+
+
+

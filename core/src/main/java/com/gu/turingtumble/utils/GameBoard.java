@@ -16,7 +16,6 @@ import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.components.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.gu.turingtumble.game.ui.*;
-import com.gu.turingtumble.levels.LevelManager;
 
 import java.util.Map;
 
@@ -51,7 +50,6 @@ public class GameBoard implements Screen, ContactListener {
         GameManager.getWorld().setContactListener(this);
         Gdx.input.setInputProcessor(uiManager.getUiStage());
         uiManager.showGameUI();
-
     }
 
     @Override
@@ -94,14 +92,7 @@ public class GameBoard implements Screen, ContactListener {
     private void update(float delta) {
         handleInput();
         GameManager.updateGameLogic(delta);
-        if (GameManager.getRedBallStopper() != null) {
-            GameManager.getRedBallStopper().update(delta);
-        }
-        if (GameManager.getBlueBallStopper() != null) {
-            GameManager.getBlueBallStopper().update(delta);
-        }
         camera.update();
-
     }
 
     private void initialiseRenderers() {
@@ -125,18 +116,17 @@ public class GameBoard implements Screen, ContactListener {
         BallStopper blueBallStopper = GameManager.getBlueBallStopper();
 
         if (redBallStopper != null && isTouchingBallStopper(touchPos, redBallStopper)) {
-            redBallStopper.toggle();
+            redBallStopper.launchBall();
             return;
         }
         if (blueBallStopper != null && isTouchingBallStopper(touchPos, blueBallStopper)) {
-            blueBallStopper.toggle();
+            blueBallStopper.launchBall();
             return;
         }
     }
 
-
-    private boolean isTouchingBallStopper(Vector3 touchPos, BallStopper ballStopper) {
-        Vector2 stopperPos = ballStopper.getBody().getPosition();
+    private boolean isTouchingBallStopper(Vector3 touchPos, BallStopper stopper) {
+        Vector2 stopperPos = stopper.getStopperBody().getPosition();
         float touchRadius = BallStopper.RADIUS * 1.5f;
         return stopperPos.dst(new Vector2(touchPos.x, touchPos.y)) < touchRadius;
     }
@@ -152,8 +142,9 @@ public class GameBoard implements Screen, ContactListener {
         drawBoard();
         drawBallStoppers();
         drawComponents();
+        drawBottomSensor();
         drawBalls();
-        debugRenderer.render(GameManager.getWorld(), camera.combined);
+//        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -182,7 +173,6 @@ public class GameBoard implements Screen, ContactListener {
 
         drawBoardLine();
         drawBoardSlot();
-
     }
 
 
@@ -232,14 +222,13 @@ public class GameBoard implements Screen, ContactListener {
     /*
       float x, float y, float x2, float y2      x1-x2, y1-y2
     */
-        float[][] Lines = {
-            {width / 2, height, width / 2, height - 50},                                                                          // 上中線
-            {width / 2, height - 50, width / 2 - CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                                                    // 上左斜線
-            {width / 2, height - 50, width / 2 + CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                                                    // 右上斜線
-            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                  // 左下斜線
-            {width, height + 10, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                                         // 右下斜線
-            {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                                  // 右下斜線
-            {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                            // 左下斜線
+        float[][] Lines = {{width / 2, height, width / 2, height - 50},                                                                // 上中線
+            {width / 2, height - 50, width / 2 - CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 上左斜線
+            {width / 2, height - 50, width / 2 + CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 右上斜線
+            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},        // 左下斜線
+            {width, height + 10, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                               // 右下斜線
+            {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                        // 右下斜線
+            {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                  // 左下斜線
         };
         return Lines;
     }
@@ -315,10 +304,17 @@ public class GameBoard implements Screen, ContactListener {
         BallStopper blueBallStopper = GameManager.getBlueBallStopper();
 
         if (redBallStopper != null) {
-            redBallStopper.draw(shapeRenderer, redBallStopper.getBody().getPosition().x, redBallStopper.getBody().getPosition().y);
+            redBallStopper.draw(shapeRenderer);
         }
         if (blueBallStopper != null) {
-            blueBallStopper.draw(shapeRenderer, blueBallStopper.getBody().getPosition().x, blueBallStopper.getBody().getPosition().y);
+            blueBallStopper.draw(shapeRenderer);
+        }
+    }
+
+    private void drawBottomSensor() {
+        BottomSensor bottomSensor = GameManager.getBottomSensor();
+        if (bottomSensor != null) {
+            bottomSensor.draw(shapeRenderer);
         }
     }
 
@@ -366,6 +362,13 @@ public class GameBoard implements Screen, ContactListener {
         } else if (userDataB instanceof Ramp && userDataA instanceof Ball) {
             Ramp ramp = (Ramp) userDataB;
             ramp.beginContact(bodyA);
+        } else if (userDataA instanceof BallStopper && userDataB instanceof Ball) {
+            BallStopper ballStopper = (BallStopper) userDataA;
+            ballStopper.handleContact(bodyB);
+        } else if (userDataA instanceof BottomSensor && userDataB instanceof Ball) {
+            BottomSensor bottomSensor = (BottomSensor) userDataA;
+            bottomSensor.handleContact(bodyB, true);
+
         }
     }
 

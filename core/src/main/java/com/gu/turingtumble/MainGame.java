@@ -3,7 +3,6 @@ package com.gu.turingtumble;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.gu.turingtumble.game.ui.GameUIManager;
 import com.gu.turingtumble.utils.GameManager;
@@ -39,14 +38,6 @@ public class MainGame extends Game {
     public void dispose() {
         super.dispose();
         uiManager.dispose();
-    }
-
-    public void removeScreen(Screen screen) {
-        if (screen != null) {
-            screen.hide();
-            screen.dispose();
-        }
-        uiManager.clear();
     }
 
     public GameUIManager getUiManager() {

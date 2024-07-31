@@ -29,7 +29,7 @@ public class Level1 implements Level {
 
     @Override
     public void reset() {
-        initialize();
+        GameManager.resetLevel();
     }
 
     @Override

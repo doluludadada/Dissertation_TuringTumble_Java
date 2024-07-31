@@ -23,13 +23,16 @@ public class GameManager {
     private static String selectedComponent;
     private static BallStopper redBallStopper;
     private static BallStopper blueBallStopper;
+    private static BottomSensor bottomSensor;
     private static GameBoard gameBoard;
+
 
 
     private static boolean isMirrorSelected = false;
 
 
-    public static void initialise() {
+    public static void initialise(GameBoard gb) {
+        gameBoard = gb;
         if (world == null) {
             initialiseWorld();
         }
@@ -62,25 +65,25 @@ public class GameManager {
 
     }
 
-    public static void initialiseBallStoppers() {
+    private static void initialiseBallStoppers() {
         float redX = (GameConstant.WINDOW_WIDTH.get() - 0.5f * GameConstant.CELL_SIZE.get());
         float blueX = (GameConstant.UI_WIDTH.get() + 0.5f * GameConstant.CELL_SIZE.get());
         float pos_Y = GameConstant.WINDOW_HEIGHT.get() - 1.4f * GameConstant.CELL_SIZE.get();
+//      sensor X,Y
+        float sensorPosX = UI_WIDTH.get() + (GAME_WIDTH.get() / 2f);
+        float sensorPosY = 50;
 
         redBallStopper = new BallStopper(redX, pos_Y, world);
         blueBallStopper = new BallStopper(blueX, pos_Y, world);
 
+
+        bottomSensor = new BottomSensor(sensorPosX, sensorPosY, world); // 從其中一個 BallStopper 獲取 BottomSensor 實例
     }
-
-
-    public static void setGravity(Vector2 gravity) {
-        if (world != null) {
-            world.setGravity(gravity);
-        }
-    }
-
 
     public static void updateGameLogic(float delta) {
+
+        updateStopperLogic();
+
         // 1/60f：每個模擬步驟的時間長度，代表 1/60 秒
         // 6：速度迭代的次數，用於更準確地計算物體的速度
         // 2：位置迭代的次數，用於更準確地計算物體的位置
@@ -89,7 +92,15 @@ public class GameManager {
         for (GameComponents component : components.values()) {
             component.update(delta);
         }
+    }
 
+    private static void updateStopperLogic() {
+        if (redBallStopper != null) {
+            redBallStopper.update();
+        }
+        if (blueBallStopper != null) {
+            blueBallStopper.update();
+        }
     }
 
     public static void addSlotPosition(Vector2 position, boolean withArc) {
@@ -106,7 +117,7 @@ public class GameManager {
                 if (components.containsKey(slotPosition)) {
                     return;
                 }
-                if (canPlaceComponent(slotPosition, isWithArc)) {
+                if (canPlaceComponent(isWithArc)) {
                     GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
                     components.put(slotPosition, component);
                     component.update(0);
@@ -149,7 +160,7 @@ public class GameManager {
     }
 
 
-    private static boolean canPlaceComponent(Vector2 slotPosition, boolean isWithArc) {
+    private static boolean canPlaceComponent(boolean isWithArc) {
         if (selectedComponent == null) {
             return false;
         }
@@ -161,39 +172,13 @@ public class GameManager {
     }
 
     private static boolean canPlaceInWithArcSlot(String componentType) {
-        return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor")
-            || componentType.equals("Gear") || componentType.equals("Crossover") || componentType.equals("GearBit");
+        return componentType.equals("Ramp") || componentType.equals("Bit") || componentType.equals("Interceptor") || componentType.equals("Gear") || componentType.equals("Crossover") || componentType.equals("GearBit");
     }
 
     private static boolean canPlaceInAnySlot(String componentType) {
         return componentType.equals("Crossover") || componentType.equals("GearBit");
     }
 
-    public static void setSelectedComponent(String componentType) {
-        selectedComponent = componentType;
-    }
-
-
-    public static List<Ball> getBlueBalls() {
-        return blueBalls;
-    }
-
-    public static List<Ball> getRedBalls() {
-        return redBalls;
-    }
-
-    public static World getWorld() {
-        return world;
-    }
-
-
-    public static boolean isMirrorSelected() {
-        return isMirrorSelected;
-    }
-
-    public static void setIsMirrorSelected(boolean isMirrorSelected) {
-        GameManager.isMirrorSelected = isMirrorSelected;
-    }
 
     public static boolean isSlotWithArc(int row, int col) {
         if (row == 0) {
@@ -233,28 +218,6 @@ public class GameManager {
     }
 
 
-    public static Body createBody(float x, float y, float width, float height, World world) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(x, y);
-
-        Body body = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2, height / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
-        fixtureDef.friction = 0.5f;
-        fixtureDef.restitution = 0.0f;
-
-        body.createFixture(fixtureDef);
-        shape.dispose();
-
-        return body;
-    }
-
     public static Body createBody(World world, BodyDef.BodyType bodyType, float pos_x, float pos_y, String name) {
         // 1. Create a BodyDef
         BodyDef bd = new BodyDef();
@@ -267,6 +230,12 @@ public class GameManager {
 
         return body;
     }
+
+    public static void resetLevel() {
+        clearComponents();
+        resetBalls(null);
+    }
+
 
     public static BallStopper getRedBallStopper() {
         return redBallStopper;
@@ -284,6 +253,49 @@ public class GameManager {
         redBalls.clear();
         blueBalls.clear();
         initialiseBalls(gb);
+    }
+
+    public static void giveBallEnergy() {
+        List<Ball> balls = new ArrayList<>();
+        balls.addAll(redBalls);
+        balls.addAll(blueBalls);
+
+        for (Ball ball : balls) {
+            ball.getBody().applyLinearImpulse(new Vector2(50f, 150f), ball.getBody().getWorldCenter(), true);
+        }
+    }
+
+    public static void setSelectedComponent(String componentType) {
+        selectedComponent = componentType;
+    }
+
+    public static List<Ball> getBlueBalls() {
+        return blueBalls;
+    }
+
+    public static List<Ball> getRedBalls() {
+        return redBalls;
+    }
+
+    public static World getWorld() {
+        return world;
+    }
+
+
+    public static boolean isMirrorSelected() {
+        return isMirrorSelected;
+    }
+
+    public static void setIsMirrorSelected(boolean isMirrorSelected) {
+        GameManager.isMirrorSelected = isMirrorSelected;
+    }
+
+    public static BottomSensor getBottomSensor() {
+        return bottomSensor;
+    }
+
+    public static void setGameBoard(GameBoard gb) {
+        gameBoard = gb;
     }
 
 }

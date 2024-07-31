@@ -53,5 +53,7 @@ public class Ball {
         shapeRenderer.end();
     }
 
-
+    public Body getBody() {
+        return body;
+    }
 }

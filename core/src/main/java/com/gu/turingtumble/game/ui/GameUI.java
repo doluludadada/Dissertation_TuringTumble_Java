@@ -17,7 +17,7 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 
 public class GameUI {
     private final MainGame game;
-    private Stage stage;
+    private final Stage stage;
 
     /**
      * Constructor for GameUI. Initializes the stage and creates the UI.
@@ -41,13 +41,16 @@ public class GameUI {
         VisWindow window = new VisWindow("Game UI");
         table.add(window).expand().top().left();
 
-        // Adding component selection buttons
+        //component selection buttons
         addComponentButton(window, "Ramp");
         addComponentButton(window, "Crossover");
         addComponentButton(window, "Bit");
         addComponentButton(window, "Interceptor");
         addComponentButton(window, "Gear");
         addComponentButton(window, "GearBit");
+        //functional buttons
+        addResetButton(window);
+        addBackButton(window);
 
         window.pack();
         window.setPosition(10, Gdx.graphics.getHeight() - window.getHeight());
@@ -73,20 +76,11 @@ public class GameUI {
             }
         });
 
-        VisTextButton mirrorButton = new VisTextButton("M");
-        mirrorButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                GameManager.setSelectedComponent(componentType);
-                GameManager.setIsMirrorSelected(true);
-            }
-        });
-
         buttonTable.add(button).pad(10);
-        buttonTable.add(mirrorButton).pad(10);
 
         window.add(buttonTable).row();
     }
+
 
     /**
      * Adds a back button to the window.
@@ -98,11 +92,12 @@ public class GameUI {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.getUiManager().showLevelSelectMenu();
+                game.getUiManager().showMainMenu();
             }
         });
         window.add(backButton).pad(10).row();
     }
+
 
     /**
      * Adds a reset button to the window.
@@ -114,10 +109,11 @@ public class GameUI {
         resetButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                GameManager.getCurrentLevel().reset();
+                GameManager.resetLevel();
             }
         });
         window.add(resetButton).pad(10).row();
     }
+
 
 }
