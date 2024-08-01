@@ -4,8 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.*;
 import com.gu.turingtumble.utils.GameManager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ComponentFactory {
     private static BodyEditorLoader loader;
+    private static Map<GameComponents, Body> componentSlotBodyMap = new HashMap<>();
+
 
     // 0. Create a loader for the file saved from the editor.
     static {
@@ -16,32 +23,39 @@ public class ComponentFactory {
         System.out.println("Creating component of type: " + type + " at position: (" + x + ", " + y + ")");
         World world = GameManager.getWorld();
         Body slotBody = createSlotBody(x, y, world);
+        GameComponents component = null;
 
-        if (GameManager.isMirrorSelected()) {
-            switch (type) {
-                case "Ramp":
-                    return new MirrorRamp(x, y, world, slotBody, loader);
-                default:
-                    throw new IllegalArgumentException("Unsupported component type for mirror: " + type);
-            }
-        } else {
-            switch (type) {
-                case "Ramp":
-                    return new Ramp(x, y, world, slotBody, loader);
-                case "Crossover":
-                    return new Crossover(x, y, world, loader);
-                case "Bit":
-                    return new Bit(x, y, world, slotBody, loader);
-                case "Interceptor":
-                    return new Interceptor(x, y, world, loader);
-                case "Gear":
-                    return new Gear();
-                case "GearBit":
-                    return new GearBit();
-                default:
-                    throw new IllegalArgumentException("Unknown component type: " + type);
-            }
+        switch (type) {
+            case "Ramp":
+                component = new Ramp(x, y, world, slotBody, loader);
+                break;
+            case "MirrorRamp":
+                component = new MirrorRamp(x, y, world, slotBody, loader);
+                break;
+            case "Crossover":
+                component = new Crossover(x, y, world, loader);
+                break;
+            case "Bit":
+                component = new Bit(x, y, world, slotBody, loader);
+                break;
+            case "Interceptor":
+                component = new Interceptor(x, y, world, loader);
+                break;
+            case "Gear":
+                component = new Gear();
+                break;
+            case "GearBit":
+                component = new GearBit();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown component type: " + type);
         }
+
+        if (component != null) {
+            componentSlotBodyMap.put(component, slotBody);
+        }
+
+        return component;
     }
 
 
@@ -61,7 +75,18 @@ public class ComponentFactory {
         fixtureDef.restitution = 0;
         slotBody.createFixture(fixtureDef);
         shape.dispose();
+
         return slotBody;
+    }
+
+
+
+    public static Body getSlotBodyForComponent(GameComponents component) {
+        return componentSlotBodyMap.get(component);
+    }
+
+    public static void removeSlotBodyForComponent(GameComponents component) {
+        componentSlotBodyMap.remove(component);
     }
 
 

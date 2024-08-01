@@ -68,4 +68,9 @@ public class Interceptor implements GameComponents {
     public void update(float delta) {
 
     }
+
+    @Override
+    public Body getBody() {
+        return interceptorBody;
+    }
 }

@@ -73,7 +73,7 @@ public class BottomSensor {
         shapeRenderer.end();
     }
 
-    public Body getSensorBody() {
+    public Body getBody() {
         return sensorBody;
     }
 }

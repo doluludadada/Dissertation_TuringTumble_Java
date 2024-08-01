@@ -37,11 +37,6 @@ public class Ramp implements GameComponents {
     protected boolean isScheduledToReset = false;
 
 
-    /**
-     * TODO 撞擊後重新繪圖，將圖形跟模型右轉45度
-     * TODO 當球離開後後就回復一開始狀態
-     */
-
     public Ramp(float x, float y, World world, Body slotBody, BodyEditorLoader loader) {
         createRamp(x, y, world, loader);
         createSprite();
@@ -53,8 +48,8 @@ public class Ramp implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 1f;
-        fd.friction = 1f;
+        fd.density = 10f;
+        fd.friction = 100f;
         fd.restitution = 0f;
 //        fd.isSensor = true;
 
@@ -109,6 +104,12 @@ public class Ramp implements GameComponents {
 
     }
 
+    @Override
+    public Body getBody() {
+        return rampBody;
+    }
+
+
     public void beginContact(Body body) {
         contactBodies.add(body);
         if (contactBodies.size() == 1) {
@@ -146,7 +147,7 @@ public class Ramp implements GameComponents {
                     isScheduledToReset = false; // 如果仍有接觸，重設調度狀態
                 }
             }
-        }, 3f); // 延遲1秒後檢查是否需要重設
+        }, 2f); // 延遲1秒後檢查是否需要重設
     }
 }
 

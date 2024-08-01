@@ -72,7 +72,7 @@ public class GameUI {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameManager.setSelectedComponent(componentType);
-                GameManager.setIsMirrorSelected(false);
+//                GameManager.setIsMirrorSelected(false);
             }
         });
 
@@ -88,15 +88,17 @@ public class GameUI {
      * @param window The window to which the button will be added.
      */
     private void addBackButton(VisWindow window) {
-        VisTextButton backButton = new VisTextButton("Back");
+        VisTextButton backButton = new VisTextButton("Back to Lobby");
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                game.restartGame();
                 game.getUiManager().showMainMenu();
             }
         });
         window.add(backButton).pad(10).row();
     }
+
 
 
     /**
@@ -114,6 +116,7 @@ public class GameUI {
         });
         window.add(resetButton).pad(10).row();
     }
+
 
 
 }

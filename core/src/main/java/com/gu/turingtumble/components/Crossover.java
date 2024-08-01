@@ -72,4 +72,9 @@ public class Crossover implements GameComponents {
     public void update(float delta) {
 
     }
+
+    @Override
+    public Body getBody() {
+        return crossoverBody;
+    }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Timer;
 import com.gu.turingtumble.utils.GameManager;
 
 public class BallStopper {
@@ -48,6 +49,7 @@ public class BallStopper {
         if (capturedBall == null) {
             capturedBall = ball;
             shouldResetBallPosition = true;
+//            setSensor(false);
         }
     }
 
@@ -59,7 +61,7 @@ public class BallStopper {
         }
 
         // Keep the captured ball at the stopper's position
-        if (capturedBall != null) {
+        if (capturedBall != null && stopperBody != null) {
             capturedBall.setTransform(stopperBody.getPosition(), capturedBall.getAngle());
             capturedBall.setLinearVelocity(Vector2.Zero);
             capturedBall.setAngularVelocity(0);
@@ -69,10 +71,18 @@ public class BallStopper {
     public void launchBall() {
         if (capturedBall != null) {
             capturedBall.setLinearVelocity(new Vector2(0, -50f));
-            setSensor(true); // Set sensor to true to allow the next ball to be captured
+//            setSensor(true); // Set sensor to true to allow the next ball to be captured
             System.out.println("Ball launched from: " + stopperBody.getPosition());
             capturedBall = null;
             GameManager.giveBallEnergy();
+
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    setSensor(true);
+                }
+            }, 0.01f); // 10毫秒延遲
+
         }
     }
 
@@ -99,7 +109,7 @@ public class BallStopper {
         }
     }
 
-    public Body getStopperBody() {
+    public Body getBody() {
         return stopperBody;
     }
 

@@ -99,5 +99,10 @@ public class Bit implements GameComponents {
 
     }
 
+    @Override
+    public Body getBody() {
+        return bitBody;
+    }
+
 
 }

@@ -8,7 +8,8 @@ import java.util.Set;
 public class LevelManager {
 
 
-    private static Level currentLevel;
+    public static Level currentLevel;
+    private static int currentLevelNumber;
     private static Set<Integer> unlockedLevels = new HashSet<>();
 
     static {
@@ -17,6 +18,7 @@ public class LevelManager {
 
     public static void loadLevel(int levelNumber) {
         GameManager.clearComponents();
+        currentLevelNumber = levelNumber;
 
         switch (levelNumber) {
             case 1:
@@ -42,4 +44,8 @@ public class LevelManager {
     public static void unlockLevel(int levelNumber) {
         unlockedLevels.add(levelNumber);
     }
+    public static int getCurrentLevelNumber() {
+        return currentLevelNumber;
+    }
+
 }

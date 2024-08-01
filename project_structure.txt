@@ -3,6 +3,7 @@
     |-- COMMIT_EDITMSG
     |-- config
     |-- description
+    |-- FETCH_HEAD
     |-- HEAD
     |-- hooks
         |-- applypatch-msg.sample
@@ -26,132 +27,24 @@
         |-- HEAD
         |-- refs
             |-- heads
-                |-- master
+                |-- main
+            |-- remotes
+                |-- 2840781t-development-project
+                    |-- main
+                |-- origin
+                    |-- main
     |-- objects
-        |-- 0c
-            |-- 6edf512ddc0b077d18226b33208f9c754f5994
-        |-- 12
-            |-- 645fd6301b3cc6504e55ecbac92cc095b9d7ae
-        |-- 14
-            |-- 8963073e00f1661f8e6ebdccb5b762049f63c4
-        |-- 17
-            |-- 0b6cafbd7a43d753315b428634ea46a7977e73
-        |-- 19
-            |-- 24a366f28bec6e5d4c4880f1ee0083e41001a6
-            |-- 406fccc47dc649545c533fe6fac2a2a6953c0b
-        |-- 20
-            |-- 39ca0420cefeaab3ed57c477cca8be26decb4e
-        |-- 23
-            |-- 1b94719e183a20b1ebf0e338ea5cdbb68ba5c3
-            |-- c25fd2f6c9b61df5bb26c8fb9bf783dc4952e0
-        |-- 25
-            |-- da30dbdeee93f6eaceea674c3b635de168ce06
-        |-- 33
-            |-- d8ae90878ba1721931d3d3ea25d1b02ce87d1f
-        |-- 34
-            |-- aee27ff320601939682581ffbc6570f34cd333
-        |-- 36
-            |-- f8fb32147c75f8dc5744515af323766e5ecba8
-        |-- 37
-            |-- 4cd64cea7c85ed83c82c05bee668f056067d46
-        |-- 43
-            |-- 51cfc71598e5de58fe64c0d5b8847e60ca7273
-        |-- 46
-            |-- d9fae2322903d99084ffa7aaf422742cf43d63
-        |-- 47
-            |-- af1899a83fa6e2a1ba3a9235e6f8ef49ee568f
-        |-- 4a
-            |-- 8dd47503dd32d671c961aa7b609f7784738ef1
-        |-- 4c
-            |-- 184fec6ec426835d4a1f3651501f9abd35e0d0
-            |-- f903a413d06e98b5dc38b76030b8d3826a3906
-        |-- 4d
-            |-- 039579637cae43aeb07f1adcb75957e2f97fa1
-        |-- 51
-            |-- 8beeebfeb6cf3e4ef19336eac5c8bc3006e6fc
-        |-- 52
-            |-- 9c362c0823086bea9b8ad1406b3a2e32be2810
-        |-- 55
-            |-- a3bfe41f2507e6bda0ce69307bd3ea9f61f5d2
-        |-- 5d
-            |-- fceab471a139728bdd79ed8ac5a2e915e92735
-        |-- 5e
-            |-- 41ad7c1af69bbc1ea082c61fccd833abc5c4ff
-        |-- 5f
-            |-- c73509d8587bc19869a28f0bc3b7877f10e293
-            |-- d54da33284e695d5a7aaaabe217a5c60decb4b
-        |-- 60
-            |-- 97f2ee3c8f25867a63f64140109bba02626f2d
-        |-- 62
-            |-- b8c0ce87ec8a88f00b1da8cd038a67af1b81f5
-        |-- 66
-            |-- 604d21dd2898e8d0fa75e74d14434140212df6
-        |-- 67
-            |-- 13fce37b7d5d8a94074a99495b5c502464f5e2
-            |-- df35c0b081715e14ff23bdc8cc1f368ed4418f
-        |-- 6c
-            |-- 4f5f9a07e0fc0aed86a683191c048c32dc0c87
-            |-- 7bfca2af8281213496bb32eb5352293bacacd6
-            |-- 84be07dc0c449be375816e3707020e6c9018df
-        |-- 71
-            |-- 4881b5b9a295396fb14c1888fda4cc5da02f5b
-        |-- 75
-            |-- 93bd49902c06ad845ebd46a34e825bbb06f177
-        |-- 76
-            |-- 3811f43a38ee7dd461941e9ea367110d4336b4
-            |-- f84600ecc0c34e76c55beed62d1769c4db3204
-        |-- 78
-            |-- 8f542c3aadf54dbd321809619843391619acb8
-        |-- 86
-            |-- 58e763c59c018222ab8abdb5d611a7f7a30f3d
-        |-- 8e
-            |-- c77f794487d202d27f448b854b3f5cc5d907dd
-        |-- 99
-            |-- 52d8bcaba9bc4a7e7368877d99d5290c9fd2dc
-        |-- 9d
-            |-- f027d27414dac3a6127c84f2d690aa424f4128
-        |-- a1
-            |-- 6433c26d3351a5bd09703a5ef5b9e9c6a93099
-        |-- a3
-            |-- 30b0b0e485e38b2b786af3b2298b1e5a68145d
-        |-- a4
-            |-- 413138c96c6ed29b6e2f5e147cd77426ae4409
-        |-- a7
-            |-- 75fb0db8cf7150761ef6fa21202c805615669b
-        |-- ae
-            |-- 640c089e0f31ce4e4c2f1f45f4257ee7b71535
-        |-- b7
-            |-- 40cf13397ab16efc23cba3d6234ff8433403b1
-        |-- c4
-            |-- f2d5ed4db3bff2b63ce23d3a775f5c28e1b343
-        |-- c7
-            |-- 361a88d3fe2b033943ec4678db940fddc03316
-            |-- e3f422ae0d8fc51d515822c003abe225f575d1
-        |-- e6
-            |-- 441136f3d4ba8a0da8d277868979cfbc8ad796
-            |-- d036c7de4b5eb760b505bc050a3143e1cd175d
-        |-- ea
-            |-- 704ea4a27798ce70422e62319536c3d4f4602f
-        |-- eb
-            |-- 2d4d2067a498fb283b92b4e554eb61a76b8d3c
-            |-- 59adf2dfd31b60a0938d9c2cd36fc029ac1081
-            |-- cd8f10385c7c5a6ee2b6d7a09a13ff7c96e409
-        |-- f1
-            |-- bdb4012a48e2193cbfa460eb8b422eb21adca7
-        |-- f6
-            |-- 9e75a695d61ee8acfb901a35f8d861491fb029
-        |-- f8
-            |-- a28a7ed83ceeaf3de007dd4fd31b62acda5a0c
-        |-- f9
-            |-- 9f1b3b05e8d8d0684328554553e77811a4a3e8
-        |-- fb
-            |-- 3137984aabf3be0b217a63b701ad5199f991f4
-        |-- info
-        |-- pack
+    |-- ORIG_HEAD
     |-- refs
         |-- heads
-            |-- master
+            |-- main
+        |-- remotes
+            |-- 2840781t-development-project
+                |-- main
+            |-- origin
+                |-- main
         |-- tags
+    |-- sourcetreeconfig.json
 |-- .gitattributes
 |-- .gitignore
 |-- .gradle
@@ -181,6 +74,8 @@
     |-- file-system.probe
     |-- vcs-1
         |-- gc.properties
+    |-- workspace-id.txt
+    |-- workspace-id.txt.lock
 |-- .idea
     |-- .gitignore
     |-- codeStyles
@@ -188,6 +83,8 @@
         |-- Project.xml
     |-- compiler.xml
     |-- gradle.xml
+    |-- inspectionProfiles
+        |-- Project_Default.xml
     |-- jarRepositories.xml
     |-- material_theme_project_new.xml
     |-- misc.xml
@@ -196,7 +93,13 @@
     |-- workspace.xml
 |-- assets
     |-- assets.txt
+    |-- black.png
+    |-- Blue.png
+    |-- Green.json
+    |-- Green.png
+    |-- Green2.png
     |-- libgdx.png
+    |-- Orange.png
     |-- ui
         |-- font-list.fnt
         |-- font-subtitle.fnt
@@ -214,18 +117,50 @@
                     |-- com
                         |-- gu
                             |-- turingtumble
-                                |-- DirectoryTreePrinter.class
-                                |-- gamecomponents
+                                |-- components
                                     |-- Ball.class
+                                    |-- BallStopper.class
+                                    |-- Bit.class
+                                    |-- BodyEditorLoader$CircleModel.class
+                                    |-- BodyEditorLoader$Model.class
+                                    |-- BodyEditorLoader$PolygonModel.class
+                                    |-- BodyEditorLoader$RigidBodyModel.class
+                                    |-- BodyEditorLoader.class
+                                    |-- BottomSensor.class
+                                    |-- ComponentFactory.class
                                     |-- Crossover.class
                                     |-- GameComponents.class
+                                    |-- Gear.class
+                                    |-- GearBit.class
+                                    |-- Interceptor.class
+                                    |-- MirrorRamp.class
+                                    |-- Ramp$1.class
                                     |-- Ramp.class
+                                |-- DirectoryTreePrinter.class
+                                |-- game
+                                    |-- ui
+                                        |-- GameLevelSelectMenu$1.class
+                                        |-- GameLevelSelectMenu$2.class
+                                        |-- GameLevelSelectMenu.class
+                                        |-- GameMainMenu$1.class
+                                        |-- GameMainMenu$2.class
+                                        |-- GameMainMenu$3.class
+                                        |-- GameMainMenu.class
+                                        |-- GameUI$1.class
+                                        |-- GameUI$2.class
+                                        |-- GameUI$3.class
+                                        |-- GameUI.class
+                                        |-- GameUIManager.class
+                                |-- levels
+                                    |-- Level.class
+                                    |-- Level1.class
+                                    |-- LevelManager.class
+                                |-- MainGame.class
                                 |-- utils
+                                    |-- GameBoard.class
                                     |-- GameConstant.class
-                                    |-- GameLogic.class
-                                    |-- GameTable$1.class
-                                    |-- GameTable$2.class
-                                    |-- GameTable.class
+                                    |-- GameManager.class
+                                    |-- GameState.class
         |-- generated
             |-- sources
                 |-- annotationProcessor
@@ -241,14 +176,31 @@
                 |-- compileTransaction
                     |-- backup-dir
                     |-- stash-dir
-                        |-- Ball.class.uniqueId4
-                        |-- GameBoard.class.uniqueId6
-                        |-- GameConstant.class.uniqueId2
-                        |-- GameLogic.class.uniqueId7
-                        |-- GameTable$1.class.uniqueId3
-                        |-- GameTable$2.class.uniqueId0
-                        |-- GameTable.class.uniqueId1
-                        |-- MainGame.class.uniqueId5
+                        |-- BallStopper.class.uniqueId17
+                        |-- Bit.class.uniqueId11
+                        |-- BottomSensor.class.uniqueId0
+                        |-- ComponentFactory.class.uniqueId1
+                        |-- GameBoard.class.uniqueId15
+                        |-- GameLevelSelectMenu$1.class.uniqueId12
+                        |-- GameLevelSelectMenu$2.class.uniqueId10
+                        |-- GameLevelSelectMenu.class.uniqueId5
+                        |-- GameMainMenu$1.class.uniqueId4
+                        |-- GameMainMenu$2.class.uniqueId9
+                        |-- GameMainMenu$3.class.uniqueId19
+                        |-- GameMainMenu.class.uniqueId22
+                        |-- GameManager.class.uniqueId13
+                        |-- GameUI$1.class.uniqueId3
+                        |-- GameUI$2.class.uniqueId16
+                        |-- GameUI$3.class.uniqueId2
+                        |-- GameUI.class.uniqueId6
+                        |-- GameUIManager.class.uniqueId18
+                        |-- Level.class.uniqueId8
+                        |-- Level1.class.uniqueId24
+                        |-- LevelManager.class.uniqueId21
+                        |-- MainGame.class.uniqueId23
+                        |-- MirrorRamp.class.uniqueId7
+                        |-- Ramp$1.class.uniqueId14
+                        |-- Ramp.class.uniqueId20
                 |-- previous-compilation-data.bin
             |-- jar
                 |-- MANIFEST.MF
@@ -259,18 +211,37 @@
                 |-- com
                     |-- gu
                         |-- turingtumble
-                            |-- DirectoryTreePrinter.java
-                            |-- gamecomponents
+                            |-- components
                                 |-- Ball.java
+                                |-- BallStopper.java
+                                |-- Bit.java
+                                |-- BodyEditorLoader.java
+                                |-- BottomSensor.java
+                                |-- ComponentFactory.java
                                 |-- Crossover.java
                                 |-- GameComponents.java
+                                |-- Gear.java
+                                |-- GearBit.java
+                                |-- Interceptor.java
+                                |-- MirrorRamp.java
                                 |-- Ramp.java
+                            |-- DirectoryTreePrinter.java
+                            |-- game
+                                |-- ui
+                                    |-- GameLevelSelectMenu.java
+                                    |-- GameMainMenu.java
+                                    |-- GameUI.java
+                                    |-- GameUIManager.java
+                            |-- levels
+                                |-- Level.java
+                                |-- Level1.java
+                                |-- LevelManager.java
                             |-- MainGame.java
                             |-- utils
                                 |-- GameBoard.java
                                 |-- GameConstant.java
-                                |-- GameLogic.java
-                                |-- GameTable.java
+                                |-- GameManager.java
+                                |-- GameState.java
 |-- gradle
     |-- wrapper
         |-- gradle-wrapper.jar
@@ -278,6 +249,15 @@
 |-- gradle.properties
 |-- gradlew
 |-- gradlew.bat
+|-- hs_err_pid10392.log
+|-- hs_err_pid14596.log
+|-- hs_err_pid22840.log
+|-- hs_err_pid35164.log
+|-- hs_err_pid35388.log
+|-- hs_err_pid368.log
+|-- hs_err_pid40968.log
+|-- hs_err_pid4472.log
+|-- hs_err_pid9092.log
 |-- lwjgl3
     |-- build
         |-- classes
@@ -300,11 +280,17 @@
         |-- resources
             |-- main
                 |-- assets.txt
+                |-- black.png
+                |-- Blue.png
+                |-- Green.json
+                |-- Green.png
+                |-- Green2.png
                 |-- libgdx.png
                 |-- libgdx128.png
                 |-- libgdx16.png
                 |-- libgdx32.png
                 |-- libgdx64.png
+                |-- Orange.png
                 |-- ui
                     |-- font-list.fnt
                     |-- font-subtitle.fnt

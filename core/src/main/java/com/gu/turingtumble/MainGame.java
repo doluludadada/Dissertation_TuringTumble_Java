@@ -5,6 +5,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.gu.turingtumble.game.ui.GameUIManager;
+import com.gu.turingtumble.levels.LevelManager;
+import com.gu.turingtumble.utils.GameBoard;
 import com.gu.turingtumble.utils.GameManager;
 
 public class MainGame extends Game {
@@ -15,10 +17,7 @@ public class MainGame extends Game {
     @Override
     public void create() {
         uiManager = new GameUIManager(this);
-
-        GameManager.initialise();
-        // Set screen to MainMenu
-        uiManager.showMainMenu();
+        uiManager.showMainMenu();                   // Set screen to MainMenu
     }
 
     @Override
@@ -37,12 +36,23 @@ public class MainGame extends Game {
     @Override
     public void dispose() {
         super.dispose();
-        uiManager.dispose();
+        if (uiManager != null) {
+            uiManager.dispose();
+        }
     }
 
     public GameUIManager getUiManager() {
         return uiManager;
     }
+
+    public void restartGame() {
+        GameManager.clearAll();
+        GameManager.initialise(this);
+        setScreen(new GameBoard(this));
+    }
+
+
+
 }
 
 

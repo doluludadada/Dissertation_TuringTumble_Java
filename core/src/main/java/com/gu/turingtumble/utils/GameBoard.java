@@ -42,6 +42,7 @@ public class GameBoard implements Screen, ContactListener {
         viewport = new FitViewport(GameConstant.WINDOW_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get(), camera);
         initialiseRenderers();
         batch = new SpriteBatch();
+
     }
 
 
@@ -50,6 +51,7 @@ public class GameBoard implements Screen, ContactListener {
         GameManager.getWorld().setContactListener(this);
         Gdx.input.setInputProcessor(uiManager.getUiStage());
         uiManager.showGameUI();
+
     }
 
     @Override
@@ -65,7 +67,6 @@ public class GameBoard implements Screen, ContactListener {
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
         createCollisionLines();
-        GameManager.initialiseBalls(this);
     }
 
     @Override
@@ -78,14 +79,17 @@ public class GameBoard implements Screen, ContactListener {
 
     @Override
     public void hide() {
+
     }
 
     @Override
     public void dispose() {
         shapeRenderer.dispose();
-        GameManager.getWorld().dispose();
         debugRenderer.dispose();
         batch.dispose();
+        if (GameManager.getWorld() != null) {
+            GameManager.getWorld().dispose();
+        }
     }
 
 
@@ -105,7 +109,11 @@ public class GameBoard implements Screen, ContactListener {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             handleBallStopperClick(touchPos);
-            GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
+            if (!GameManager.toggleComponentMirror(new Vector2(touchPos.x, touchPos.y))) {
+                GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
+            }
+
+
             System.out.println(touchPos.x + " " + touchPos.y);
         }
     }
@@ -126,7 +134,7 @@ public class GameBoard implements Screen, ContactListener {
     }
 
     private boolean isTouchingBallStopper(Vector3 touchPos, BallStopper stopper) {
-        Vector2 stopperPos = stopper.getStopperBody().getPosition();
+        Vector2 stopperPos = stopper.getBody().getPosition();
         float touchRadius = BallStopper.RADIUS * 1.5f;
         return stopperPos.dst(new Vector2(touchPos.x, touchPos.y)) < touchRadius;
     }
@@ -144,7 +152,7 @@ public class GameBoard implements Screen, ContactListener {
         drawComponents();
         drawBottomSensor();
         drawBalls();
-//        debugRenderer.render(GameManager.getWorld(), camera.combined);
+        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -200,8 +208,9 @@ public class GameBoard implements Screen, ContactListener {
     private void createCollisionLines() {
 
         float width = camera.viewportWidth + GameConstant.UI_WIDTH.get();
+//        float width =  GameConstant.WINDOW_WIDTH.get();
+//        float height = GameConstant.WINDOW_HEIGHT.get();
         float height = camera.viewportHeight;
-
 
         float[][] lines = getLine(width, height);
 
@@ -222,11 +231,11 @@ public class GameBoard implements Screen, ContactListener {
     /*
       float x, float y, float x2, float y2      x1-x2, y1-y2
     */
-        float[][] Lines = {{width / 2, height, width / 2, height - 50},                                                                // 上中線
+        float[][] Lines = {{width / 2, height, width / 2, height - 50},                                                 // 上中線
             {width / 2, height - 50, width / 2 - CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 上左斜線
             {width / 2, height - 50, width / 2 + CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 右上斜線
-            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3},        // 左下斜線
-            {width, height + 10, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3},                               // 右下斜線
+            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3.1f},     // 左下斜線
+            {width, height + 20, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3.1f},                             // 右下斜線
             {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                        // 右下斜線
             {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                  // 左下斜線
         };

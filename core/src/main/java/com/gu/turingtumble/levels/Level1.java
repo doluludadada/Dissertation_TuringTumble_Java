@@ -1,6 +1,7 @@
 package com.gu.turingtumble.levels;
 
 import com.badlogic.gdx.math.Vector2;
+import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
 public class Level1 implements Level {
@@ -21,14 +22,15 @@ public class Level1 implements Level {
         GameManager.addComponent(8, 4);
 
         // 鏡像 Ramp
-        GameManager.setIsMirrorSelected(true);
+//        GameManager.setIsMirrorSelected(true);
+        GameManager.setSelectedComponent("MirrorRamp");
         GameManager.addComponent(1, 5);
-        GameManager.setIsMirrorSelected(false);
+//        GameManager.setIsMirrorSelected(false);
 
     }
 
     @Override
-    public void reset() {
+    public void reset(MainGame game) {
         GameManager.resetLevel();
     }
 

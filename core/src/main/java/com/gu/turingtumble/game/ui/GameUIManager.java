@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gu.turingtumble.utils.GameConstant;
+import com.gu.turingtumble.utils.GameManager;
 import com.kotcrab.vis.ui.VisUI;
 
 import com.gu.turingtumble.MainGame;
@@ -29,6 +30,7 @@ public class GameUIManager {
         this.game = game;
         initializeStages();
         initializeVisUI();
+        GameManager.initialise(game);
     }
 
 
@@ -112,7 +114,6 @@ public class GameUIManager {
     public Stage getGameStage() {
         return gameStage;
     }
-
 
 
 }
