@@ -5,13 +5,12 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.gu.turingtumble.game.ui.GameUIManager;
-import com.gu.turingtumble.levels.LevelManager;
 import com.gu.turingtumble.utils.GameBoard;
 import com.gu.turingtumble.utils.GameManager;
 
 public class MainGame extends Game {
 
-    private GameUIManager uiManager;
+    public static GameUIManager uiManager;
 
 
     @Override

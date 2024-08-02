@@ -18,6 +18,7 @@ public class GameUIManager {
     private Stage uiStage;
     private Stage gameStage;
     private MainGame game;
+    private GameUI gameUI;
 
 
     /**
@@ -28,20 +29,20 @@ public class GameUIManager {
 
     public GameUIManager(MainGame game) {
         this.game = game;
-        initializeStages();
-        initializeVisUI();
+        initialiseStages();
+        initialiseVisUI();
         GameManager.initialise(game);
     }
 
 
-    private void initializeVisUI() {
+    private void initialiseVisUI() {
         if (!VisUI.isLoaded()) {
             VisUI.load();
         }
     }
 
 
-    private void initializeStages() {
+    private void initialiseStages() {
         uiStage = new Stage(new ScreenViewport());
         uiStage.getViewport().setWorldWidth(GameConstant.UI_WIDTH.get());
         uiStage.getViewport().setWorldHeight(GameConstant.WINDOW_HEIGHT.get());
@@ -94,7 +95,7 @@ public class GameUIManager {
 
     public void showGameUI() {
         clear();
-        new GameUI(game, uiStage);
+        gameUI = new GameUI(game, uiStage);
     }
 
     public void showMainMenu() {
@@ -115,5 +116,13 @@ public class GameUIManager {
         return gameStage;
     }
 
+    public GameUI getGameUI() {
+        return gameUI;
+    }
 
+    public void updateUI() {
+        if (gameUI != null) {
+            gameUI.updateUI();
+        }
+    }
 }

@@ -3,7 +3,21 @@ package com.gu.turingtumble.levels;
 import com.gu.turingtumble.MainGame;
 
 public interface Level {
-    void initialize();
+
+    void initialise();
+
     void reset(MainGame game);
-    void onComplete();
+
+    void basicComponent();
+
+    boolean isComplete();
+
+    boolean componentLimit(String componentType);
+
+    int getLeftComponentCount(String componentType);
+
+    void plusComponentCount(String componentType);
+
+    void setVictoryCondition();
+
 }

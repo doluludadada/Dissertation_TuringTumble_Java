@@ -17,7 +17,7 @@ import com.gu.turingtumble.components.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.gu.turingtumble.game.ui.*;
 
-import java.util.Map;
+import java.util.*;
 
 
 public class GameBoard implements Screen, ContactListener {
@@ -36,6 +36,7 @@ public class GameBoard implements Screen, ContactListener {
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
+
     public GameBoard(MainGame game) {
         this.uiManager = game.getUiManager();
         camera = new OrthographicCamera();
@@ -51,13 +52,13 @@ public class GameBoard implements Screen, ContactListener {
         GameManager.getWorld().setContactListener(this);
         Gdx.input.setInputProcessor(uiManager.getUiStage());
         uiManager.showGameUI();
-
     }
 
     @Override
     public void render(float delta) {
         update(delta);
         draw();
+
     }
 
 
@@ -97,6 +98,7 @@ public class GameBoard implements Screen, ContactListener {
         handleInput();
         GameManager.updateGameLogic(delta);
         camera.update();
+
     }
 
     private void initialiseRenderers() {
@@ -112,7 +114,7 @@ public class GameBoard implements Screen, ContactListener {
             if (!GameManager.toggleComponentMirror(new Vector2(touchPos.x, touchPos.y))) {
                 GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
             }
-
+            uiManager.updateUI();
 
             System.out.println(touchPos.x + " " + touchPos.y);
         }
@@ -327,7 +329,6 @@ public class GameBoard implements Screen, ContactListener {
         }
     }
 
-
     private void createEdge(float x1, float y1, float x2, float y2) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -347,6 +348,7 @@ public class GameBoard implements Screen, ContactListener {
     }
 
 
+
     public float getCameraWidth() {
         return camera.viewportWidth;
     }
@@ -355,6 +357,17 @@ public class GameBoard implements Screen, ContactListener {
         return camera.viewportHeight;
     }
 
+    public Box2DDebugRenderer getDebugRenderer() {
+        return debugRenderer;
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
+    }
+
+    public GameUIManager getUiManager() {
+        return uiManager;
+    }
 
     @Override
     public void beginContact(Contact contact) {

@@ -1,6 +1,7 @@
 package com.gu.turingtumble.levels;
 
 import com.gu.turingtumble.utils.GameManager;
+import com.gu.turingtumble.utils.GameState;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class LevelManager {
             default:
                 throw new IllegalArgumentException("Unknown level: " + levelNumber);
         }
-        currentLevel.initialize();
+        currentLevel.initialise();
     }
 
     public static Level getCurrentLevel() {
@@ -44,8 +45,15 @@ public class LevelManager {
     public static void unlockLevel(int levelNumber) {
         unlockedLevels.add(levelNumber);
     }
+
     public static int getCurrentLevelNumber() {
         return currentLevelNumber;
+    }
+
+    public static void checkLevelCompletion() {
+        if (currentLevel != null && currentLevel.isComplete()) {
+            unlockLevel(currentLevelNumber + 1);
+        }
     }
 
 }

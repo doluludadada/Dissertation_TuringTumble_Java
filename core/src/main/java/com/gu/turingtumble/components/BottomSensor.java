@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
 public class BottomSensor {
@@ -43,13 +44,20 @@ public class BottomSensor {
             // 左半部分（藍色）
             if (isEntering) {
                 GameManager.getBlueBallStopper().launchBall();
+                GameManager.getGameState().adjustBlueBallNum();
+                MainGame.uiManager.updateUI();
             }
         } else {
             // 右半部分（紅色）
             if (isEntering) {
                 GameManager.getRedBallStopper().launchBall();
+                GameManager.getGameState().adjustRedBallNum();
+                MainGame.uiManager.updateUI();
             }
         }
+
+
+
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

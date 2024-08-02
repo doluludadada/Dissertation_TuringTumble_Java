@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.components.*;
+import com.gu.turingtumble.levels.LevelManager;
 
 import java.util.*;
 
@@ -24,6 +25,7 @@ public class GameManager {
     private static BallStopper blueBallStopper;
     private static BottomSensor bottomSensor;
     private static GameBoard gameBoard;
+    private static GameState gameState;
 
 
     public static void initialise(MainGame game) {
@@ -31,6 +33,7 @@ public class GameManager {
         initialiseBoard(game);
         initialiseBallStoppers();
         initialiseBalls();
+        gameState = new GameState();
     }
 
 
@@ -99,7 +102,13 @@ public class GameManager {
         for (GameComponents component : components.values()) {
             component.update(delta);
         }
+
+        if (currentLevel.isComplete()) {
+            LevelManager.unlockLevel(LevelManager.getCurrentLevelNumber() + 1);
+        }
+
     }
+
 
     private static void updateStopperLogic() {
         if (redBallStopper != null) {
@@ -109,6 +118,7 @@ public class GameManager {
             blueBallStopper.update();
         }
     }
+
 
     public static void addSlotPosition(Vector2 position, boolean withArc) {
         slotPositions.put(position, withArc);
@@ -124,13 +134,21 @@ public class GameManager {
                 if (components.containsKey(slotPosition)) {
                     return;
                 }
-                if (canPlaceComponent(isWithArc)) {
+                if (canPlaceComponent(selectedComponent, isWithArc)) {
                     GameComponents component = ComponentFactory.createComponent(selectedComponent, slotPosition.x, slotPosition.y);
                     components.put(slotPosition, component);
                     component.update(0);
+                    adjustComponentLimit(selectedComponent);
                     break;
                 }
             }
+        }
+    }
+
+    private static void adjustComponentLimit(String componentType) {
+        if (currentLevel != null) {
+            currentLevel.plusComponentCount(componentType);
+
         }
     }
 
@@ -157,7 +175,7 @@ public class GameManager {
         float offsetX = (width - SLOT_NUMBER_WIDTH.get() * CELL_SIZE.get()) / 2;
         float offsetY = (height - SLOT_NUMBER_HEIGHT.get() * CELL_SIZE.get()) / 2;
 
-        // 根據行和列計算位置
+
         float x = col * CELL_SIZE.get() + offsetX + (CELL_SIZE.get() / 2f) + 140;
         int flippedRow = SLOT_NUMBER_HEIGHT.get() - row - 1;
         float y = flippedRow * CELL_SIZE.get() + offsetY + (CELL_SIZE.get() / 2f) - 30;
@@ -167,10 +185,15 @@ public class GameManager {
     }
 
 
-    private static boolean canPlaceComponent(boolean isWithArc) {
+    private static boolean canPlaceComponent(String componentType, boolean isWithArc) {
         if (selectedComponent == null) {
             return false;
         }
+
+        if (!currentLevel.componentLimit(componentType)) {
+            return false;
+        }
+
         if (isWithArc) {
             return canPlaceInWithArcSlot(selectedComponent);
         } else {
@@ -240,18 +263,18 @@ public class GameManager {
 
     public static void clearComponents() {
         for (GameComponents component : components.values()) {
-            // 銷毀元件的 body
+
             Body body = component.getBody();
             if (body != null) {
                 world.destroyBody(body);
             }
 
-            // 銷毀元件的 slot body
+
             Body slotBody = ComponentFactory.getSlotBodyForComponent(component);
             if (slotBody != null) {
                 world.destroyBody(slotBody);
             }
-            // 從對應中移除該元件
+
             ComponentFactory.removeSlotBodyForComponent(component);
         }
         components.clear();
@@ -290,12 +313,12 @@ public class GameManager {
             if (position.dst(slotPosition) < GameConstant.CELL_SIZE.get() / 2) {
                 if (component instanceof MirrorRamp) {
                     replaceComponent(slotPosition, "Ramp", component);
-                    return true; // 成功切換鏡像狀態
+                    return true;
                 }
 
                 if (component instanceof Ramp) {
                     replaceComponent(slotPosition, "MirrorRamp", component);
-                    return true; // 成功切換鏡像狀態
+                    return true;
                 }
                 break;
             }
@@ -305,19 +328,18 @@ public class GameManager {
 
 
     private static void replaceComponent(Vector2 slotPosition, String newComponentType, GameComponents oldComponent) {
-        // 销毁旧组件的 slot body
+
         Body slotBody = ComponentFactory.getSlotBodyForComponent(oldComponent);
         if (slotBody != null) {
             GameManager.getWorld().destroyBody(slotBody);
             ComponentFactory.removeSlotBodyForComponent(oldComponent);
         }
 
-        // 销毁旧组件的 body
         if (oldComponent.getBody() != null) {
             GameManager.getWorld().destroyBody(oldComponent.getBody());
         }
 
-        // 创建新组件
+
         GameComponents newComponent = ComponentFactory.createComponent(
             newComponentType,
             slotPosition.x,
@@ -351,7 +373,7 @@ public class GameManager {
         clearBallStoppersAndSensor();
         initialiseBalls();
         initialiseBallStoppers();
-        currentLevel.initialize();
+        currentLevel.initialise();
     }
 
     public static void clearAll() {
@@ -416,6 +438,13 @@ public class GameManager {
         return world;
     }
 
+    public static GameState getGameState() {
+        return gameState;
+    }
+
+    public static GameBoard getGameBoard() {
+        return gameBoard;
+    }
 
     public static BottomSensor getBottomSensor() {
         return bottomSensor;
