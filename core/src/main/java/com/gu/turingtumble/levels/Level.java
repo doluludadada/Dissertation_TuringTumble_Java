@@ -1,16 +1,23 @@
 package com.gu.turingtumble.levels;
 
 import com.gu.turingtumble.MainGame;
+import com.gu.turingtumble.utils.GameManager;
 
 public interface Level {
 
-    void initialise();
+    default void initialise(){
+        System.out.println("level initialized");
+        basicComponent();
+        setVictoryCondition();
+    };
 
     void reset(MainGame game);
 
     void basicComponent();
 
-    boolean isComplete();
+    default boolean isComplete() {
+        return GameManager.getGameState().getGoalBlueBall() == 0 && GameManager.getGameState().getGoalRedBall() == 0;
+    }
 
     boolean componentLimit(String componentType);
 
@@ -18,6 +25,9 @@ public interface Level {
 
     void plusComponentCount(String componentType);
 
-    void setVictoryCondition();
+    default void setVictoryCondition() {
+        GameManager.getGameState().setGoalBlueBall(0);
+        GameManager.getGameState().setGoalRedBall(0);
+    }
 
 }

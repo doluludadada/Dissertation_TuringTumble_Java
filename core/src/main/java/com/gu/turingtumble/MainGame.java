@@ -40,7 +40,7 @@ public class MainGame extends Game {
         }
     }
 
-    public GameUIManager getUiManager() {
+    public static GameUIManager getUiManager() {
         return uiManager;
     }
 

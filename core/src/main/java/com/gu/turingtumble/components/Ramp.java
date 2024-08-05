@@ -73,7 +73,7 @@ public class Ramp implements GameComponents {
         // Create A（fixed point）
         jointDf.bodyA = slotBody;
         jointDf.localAnchorA.set(slotBody.getPosition().x, slotBody.getPosition().y);
-        // Create B（bit body）
+        // Create B（ramp Body）
         jointDf.bodyB = rampBody;
         jointDf.localAnchorB.set(rampBody.getPosition().x, rampBody.getPosition().y);
         // Create Joint

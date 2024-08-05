@@ -9,7 +9,7 @@ import com.gu.turingtumble.levels.LevelManager;
 
 import java.util.*;
 
-import static com.gu.turingtumble.levels.LevelManager.currentLevel;
+
 import static com.gu.turingtumble.utils.GameConstant.*;
 
 
@@ -17,7 +17,6 @@ public class GameManager {
     private static World world;
     private static List<Ball> redBalls = new ArrayList<>();
     private static List<Ball> blueBalls = new ArrayList<>();
-    private static List<Body> slotBodies = new ArrayList<>();
     private static Map<Vector2, Boolean> slotPositions = new HashMap<>(); // true for slots with arc, false for regular slots
     private static Map<Vector2, GameComponents> components = new HashMap<>();
     private static String selectedComponent;
@@ -52,6 +51,9 @@ public class GameManager {
 
 
     public static void initialiseBalls() {
+//      reset balls
+        redBalls.clear();
+        blueBalls.clear();
 
         //      coordinate
 //        float centreX = (gameBoard.getCameraWidth() + GameConstant.UI_WIDTH.get()) / 2;
@@ -103,9 +105,11 @@ public class GameManager {
             component.update(delta);
         }
 
-        if (currentLevel.isComplete()) {
+        if (LevelManager.getCurrentLevel().isComplete()) {
             LevelManager.unlockLevel(LevelManager.getCurrentLevelNumber() + 1);
         }
+
+        LevelManager.checkLevelCompletion();
 
     }
 
@@ -146,9 +150,8 @@ public class GameManager {
     }
 
     private static void adjustComponentLimit(String componentType) {
-        if (currentLevel != null) {
-            currentLevel.plusComponentCount(componentType);
-
+        if (LevelManager.getCurrentLevel() != null) {
+            LevelManager.getCurrentLevel().plusComponentCount(componentType);
         }
     }
 
@@ -190,7 +193,7 @@ public class GameManager {
             return false;
         }
 
-        if (!currentLevel.componentLimit(componentType)) {
+        if (!LevelManager.getCurrentLevel().componentLimit(componentType)) {
             return false;
         }
 
@@ -351,13 +354,13 @@ public class GameManager {
 
     public static void clearBalls() {
         for (Ball ball : redBalls) {
-            Body body = ball.getBody();
+            Body body = ball.getBallBody();
             if (body != null) {
                 world.destroyBody(body);
             }
         }
         for (Ball ball : blueBalls) {
-            Body body = ball.getBody();
+            Body body = ball.getBallBody();
             if (body != null) {
                 world.destroyBody(body);
             }
@@ -371,9 +374,10 @@ public class GameManager {
         clearComponents();
         clearBalls();
         clearBallStoppersAndSensor();
-        initialiseBalls();
+
+        LevelManager.getCurrentLevel().initialise();
         initialiseBallStoppers();
-        currentLevel.initialise();
+        initialiseBalls();
     }
 
     public static void clearAll() {
@@ -418,7 +422,7 @@ public class GameManager {
         balls.addAll(blueBalls);
 
         for (Ball ball : balls) {
-            ball.getBody().applyLinearImpulse(new Vector2(0f, 20f), ball.getBody().getPosition(), true);
+            ball.getBallBody().applyLinearImpulse(new Vector2(0f, 20f), ball.getBallBody().getPosition(), true);
         }
     }
 

@@ -13,7 +13,9 @@ public enum GameConstant {
     UI_WIDTH(400),                                                  //
     WINDOW_WIDTH(GAME_WIDTH.get() + UI_WIDTH.get()),                //
     WINDOW_HEIGHT(980),                                             //
+    TEST_MODE(1),                                                   // unlock all of level
     ;
+
 
     private final int intValue;
     private final double doubleValue;

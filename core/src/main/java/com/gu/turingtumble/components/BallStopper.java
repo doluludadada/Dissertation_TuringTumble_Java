@@ -36,7 +36,7 @@ public class BallStopper {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.isSensor = true;
+        fixtureDef.isSensor = false;
         body.createFixture(fixtureDef);
         shape.dispose();
 

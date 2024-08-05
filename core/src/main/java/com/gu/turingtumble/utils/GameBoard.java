@@ -44,6 +44,9 @@ public class GameBoard implements Screen, ContactListener {
         initialiseRenderers();
         batch = new SpriteBatch();
 
+        Gdx.gl.glEnable(GL20.GL_BLEND);                                                                                 //anti-aliasing
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
     }
 
 
@@ -91,12 +94,14 @@ public class GameBoard implements Screen, ContactListener {
         if (GameManager.getWorld() != null) {
             GameManager.getWorld().dispose();
         }
+
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
 
     private void update(float delta) {
-        handleInput();
         GameManager.updateGameLogic(delta);
+        handleInput();
         camera.update();
 
     }
@@ -145,8 +150,8 @@ public class GameBoard implements Screen, ContactListener {
     private void draw() {
         viewport.apply();
 //        set background to white
-        Gdx.gl.glClearColor(1, 1, 1, 1);       //white
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClearColor(1, 1, 1, 0);       //white
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         drawBoard();
@@ -154,7 +159,7 @@ public class GameBoard implements Screen, ContactListener {
         drawComponents();
         drawBottomSensor();
         drawBalls();
-        debugRenderer.render(GameManager.getWorld(), camera.combined);
+//        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -176,7 +181,7 @@ public class GameBoard implements Screen, ContactListener {
 
         // Draw border
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.setColor(Color.DARK_GRAY);
         Gdx.gl.glLineWidth(10);
         shapeRenderer.rect(GameConstant.UI_WIDTH.get(), 0, GameConstant.GAME_WIDTH.get(), GameConstant.WINDOW_HEIGHT.get());
         shapeRenderer.end();
@@ -193,7 +198,7 @@ public class GameBoard implements Screen, ContactListener {
 
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.setColor(Color.DARK_GRAY);
         Gdx.gl.glLineWidth(6);
 
 
@@ -210,8 +215,6 @@ public class GameBoard implements Screen, ContactListener {
     private void createCollisionLines() {
 
         float width = camera.viewportWidth + GameConstant.UI_WIDTH.get();
-//        float width =  GameConstant.WINDOW_WIDTH.get();
-//        float height = GameConstant.WINDOW_HEIGHT.get();
         float height = camera.viewportHeight;
 
         float[][] lines = getLine(width, height);
@@ -258,7 +261,7 @@ public class GameBoard implements Screen, ContactListener {
 
                 float x = col * CELL_SIZE + offsetX + (CELL_SIZE / 2f);
 
-                // Flipping the row index vertically
+                // row index vertically
                 int flippedRow = SLOT_NUMBER_HEIGHT - row - 1;
                 // Calculating the y-coordinate for the slot
                 int baseY = flippedRow * CELL_SIZE;
@@ -277,6 +280,7 @@ public class GameBoard implements Screen, ContactListener {
         shapeRenderer.end();
     }
 
+
     private void drawSlotWithArc(ShapeRenderer renderer, float x, float y) {
 
         renderer.setColor(Color.GRAY);
@@ -291,10 +295,8 @@ public class GameBoard implements Screen, ContactListener {
     }
 
     private void drawSlot(ShapeRenderer renderer, float x, float y) {
-
         renderer.setColor(Color.GRAY);
         renderer.circle(x, y, 10);
-
     }
 
 

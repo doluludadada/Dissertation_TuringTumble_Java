@@ -65,8 +65,6 @@ public class GameUI {
 
         window.pack();
         window.setPosition(10, Gdx.graphics.getHeight() - window.getHeight());
-
-
     }
 
 
@@ -209,7 +207,6 @@ public class GameUI {
     }
 
 
-
     public void updateUI() {
         Level currentLevel = LevelManager.getCurrentLevel();
         if (currentLevel != null) {
@@ -221,14 +218,26 @@ public class GameUI {
             }
         }
 
-
         for (Actor actor : uiStage.getActors()) {
             if (actor instanceof VisWindow && ((VisWindow) actor).getTitleLabel().getText().toString().equals("Challenge requirements:")) {
                 updateVictoryConditionPanel((VisWindow) actor);
                 break;
             }
         }
+    }
 
+    public void showLevelCompleteDialog() {
+        VisDialog dialog = new VisDialog("Level Complete") {
+            @Override
+            protected void result(Object object) {
+                game.restartGame();
+                LevelManager.loadLevel(LevelManager.getCurrentLevelNumber() + 1);
+                updateUI();
+            }
+        };
+        dialog.text("You have completed the level!!");
+        dialog.button("OK", true);
+        dialog.show(uiStage);
     }
 
 }
