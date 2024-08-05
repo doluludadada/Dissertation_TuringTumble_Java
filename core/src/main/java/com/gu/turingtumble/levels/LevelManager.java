@@ -33,6 +33,7 @@ public class LevelManager {
             case 1 -> new Level1();
             case 2 -> new Level2();
             case 3 -> new Level3();
+            case 4 -> new Level4();
             default -> throw new IllegalArgumentException("Unknown level: " + levelNumber);
         };
 

@@ -7,6 +7,7 @@ import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.components.*;
 import com.gu.turingtumble.levels.LevelManager;
 
+import java.io.*;
 import java.util.*;
 
 
@@ -25,6 +26,10 @@ public class GameManager {
     private static BottomSensor bottomSensor;
     private static GameBoard gameBoard;
     private static GameState gameState;
+
+    //    SAVE MESSAGE
+    private static final String SAVE_FILE = "player_save.dat";
+    private static Map<String, Integer> saves = new HashMap<>();
 
 
     public static void initialise(MainGame game) {
@@ -401,6 +406,52 @@ public class GameManager {
             gameBoard.dispose();
             gameBoard = null;
         }
+    }
+
+
+    /**
+     * Loads player records from file.
+     */
+    public static void loadRecords() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_FILE))) {
+            saves = (Map<String, Integer>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            System.out.println("Record file not found, creating new one.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Saves player records to file.
+     */
+    public static void saveRecords() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
+            oos.writeObject(saves);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Updates the record for a specific level.
+     *
+     * @param level    The level number
+     * @param score    The score to save
+     */
+    public static void updateRecord(int level, int score) {
+        saves.put("Level " + level, score);
+        saveRecords();
+    }
+
+    /**
+     * Gets the record for a specific level.
+     *
+     * @param level    The level number
+     * @return         The score of the specified level
+     */
+    public static int getRecord(int level) {
+        return saves.getOrDefault("Level " + level, 0);
     }
 
 
