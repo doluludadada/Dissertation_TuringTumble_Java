@@ -284,14 +284,6 @@ public class GameManager {
             if (body != null) {
                 world.destroyBody(body);
             }
-
-
-//            Body slotBody = ComponentFactory.getSlotBodyForComponent(component);
-//            if (slotBody != null) {
-//                world.destroyBody(slotBody);
-//            }
-
-//            ComponentFactory.removeSlotBodyForComponent(component);
         }
         components.clear();
     }
@@ -345,12 +337,6 @@ public class GameManager {
 
 
     private static void replaceComponent(Vector2 slotPosition, String newComponentType, GameComponents oldComponent) {
-//        Body slotBody = ComponentFactory.getSlotBodyForComponent(oldComponent);
-//        if (slotBody != null) {
-//            GameManager.getWorld().destroyBody(slotBody);
-//            ComponentFactory.removeSlotBodyForComponent(oldComponent);
-//        }
-
         if (oldComponent.getBody() != null) {
             GameManager.getWorld().destroyBody(oldComponent.getBody());
         }
@@ -413,13 +399,16 @@ public class GameManager {
 
 
     public static void resetLevel() {
+        redBallStopper.reset();
+        blueBallStopper.reset();
         clearComponents();
         clearBalls();
         clearBallStoppersAndSensor();
 
-        LevelManager.getCurrentLevel().initialise();
+
         initialiseBallStoppers();
         initialiseBalls();
+        LevelManager.getCurrentLevel().initialise();
     }
 
     public static void clearAll() {

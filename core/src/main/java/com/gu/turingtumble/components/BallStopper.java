@@ -114,6 +114,12 @@ public class BallStopper {
         return stopperBody;
     }
 
+    public void reset() {
+        capturedBall = null;
+        shouldResetBallPosition = false;
+        setSensor(false);
+    }
+
 
 }
 
