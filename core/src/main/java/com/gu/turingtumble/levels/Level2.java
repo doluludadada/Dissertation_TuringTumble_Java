@@ -3,6 +3,8 @@ package com.gu.turingtumble.levels;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
+import java.util.Arrays;
+
 public class Level2 implements Level {
     private static final int MAX_RAMP_COUNT = 5;
     private static final int REQUIRED_BLUE_BALLS = 8;
@@ -58,7 +60,6 @@ public class Level2 implements Level {
 
     @Override
     public void setVictoryCondition() {
-        GameManager.getGameState().setGoalBlueBall(REQUIRED_BLUE_BALLS);
-        GameManager.getGameState().setGoalRedBall(0);
+        GameManager.getGameState().setRequireGoal(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
     }
 }

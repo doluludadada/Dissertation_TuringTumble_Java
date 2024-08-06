@@ -117,7 +117,7 @@ public class GameBoard implements Screen, ContactListener {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             handleBallStopperClick(touchPos);
-            if (!GameManager.toggleComponentMirror(new Vector2(touchPos.x, touchPos.y))) {
+            if (!GameManager.switchComponentFunction(new Vector2(touchPos.x, touchPos.y))) {
                 GameManager.addComponent(new Vector2(touchPos.x, touchPos.y));
             }
             uiManager.updateUI();

@@ -3,16 +3,18 @@ package com.gu.turingtumble.levels;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
-public class Level4 implements Level{
+import java.util.Arrays;
+
+public class Level4 implements Level {
 
     private static final int MAX_RAMP_COUNT = 13;
     private int currentRampCount = 0;
-    private static final int REQUIRED_BLUE_BALLS = 7;
-    private static final int REQUIRED_RED_BALLS = 1;
 
     @Override
     public void initialise() {
-        Level.super.initialise();
+        setVictoryCondition();
+        currentRampCount = 0;
+        basicComponent();
     }
 
     @Override
@@ -43,21 +45,29 @@ public class Level4 implements Level{
 
     @Override
     public boolean componentLimit(String componentType) {
-        return false;
+        if ("Ramp".equals(componentType)) {
+            return currentRampCount < MAX_RAMP_COUNT;
+        }
+        return true;
     }
 
     @Override
     public int getLeftComponentCount(String componentType) {
+        if ("Ramp".equals(componentType)) {
+            return MAX_RAMP_COUNT - currentRampCount;
+        }
         return 0;
     }
 
     @Override
     public void plusComponentCount(String componentType) {
-
+        if ("Ramp".equals(componentType)) {
+            currentRampCount++;
+        }
     }
 
     @Override
     public void setVictoryCondition() {
-        Level.super.setVictoryCondition();
+        GameManager.getGameState().setRequireGoal(Arrays.asList(1, 0, 0, 0, 0, 0, 0, 0));
     }
 }

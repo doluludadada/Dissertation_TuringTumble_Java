@@ -68,8 +68,7 @@ public class LevelManager {
     }
 
     private static void unlockAllLevels() {
-        // Assuming we have 10 levels for the example. Adjust the number of levels as necessary.
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 4; i++) {
             unlockedLevels.add(i);
         }
     }

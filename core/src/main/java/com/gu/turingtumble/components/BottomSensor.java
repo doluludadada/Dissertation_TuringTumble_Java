@@ -64,7 +64,7 @@ public class BottomSensor {
      * @param isEntering True if the ball is entering the sensor, false if leaving
      */
     public void handleContact(Body ball, boolean isEntering) {
-        if (!isEntering) return; // Only handle entering contacts
+        if (!isEntering) return;
 
         Ball ballData = (Ball) ball.getUserData();
         if (ballData == null) return;
@@ -72,22 +72,18 @@ public class BottomSensor {
         Vector2 position = ball.getPosition();
         Vector2 sensorPosition = sensorBody.getPosition();
 
+        int ballColor = ballData.getBallColour().equals(Color.BLUE) ? 0 : 1;
+        GameManager.getGameState().addCurrentState(ballColor);
+
         if (position.x < sensorPosition.x) {
-            // Left half (Blue)
             GameManager.getBlueBallStopper().launchBall();
-            if (ballData.getBallColour().equals(Color.BLUE)) {
-                GameManager.getGameState().adjustBlueBallNum();
-                MainGame.getUiManager().updateUI();
-            }
         } else {
-            // Right half (Red)
             GameManager.getRedBallStopper().launchBall();
-            if (ballData.getBallColour().equals(Color.RED)) {
-                GameManager.getGameState().adjustRedBallNum();
-                MainGame.getUiManager().updateUI();
-            }
         }
+
+        MainGame.getUiManager().updateUI();
     }
+
 
 
     /**

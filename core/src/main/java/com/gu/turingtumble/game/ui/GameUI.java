@@ -26,6 +26,8 @@ public class GameUI {
     private final Stage uiStage;
     private final Map<String, VisLabel> componentLabels = new HashMap<>();
 
+    private boolean isErrorDialogShown = false;
+
 
     /**
      * Constructor for GameUI. Initializes the stage and creates the UI.
@@ -60,6 +62,7 @@ public class GameUI {
         addComponentButton(window, "Gear");
         addComponentButton(window, "GearBit");
         //functional buttons
+        addSpeedButton(window);
         addResetButton(window);
         addBackButton(window);
 
@@ -119,12 +122,11 @@ public class GameUI {
      * @param window The window to which the button will be added.
      */
     private void addBackButton(VisWindow window) {
-        VisTextButton backButton = new VisTextButton("Back to Lobby");
+        VisTextButton backButton = new VisTextButton("Exit the game");
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.restartGame();
-                game.getUiManager().showMainMenu();
+                game.restartApplication();
             }
         });
         window.add(backButton).pad(10).row();
@@ -142,10 +144,22 @@ public class GameUI {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameManager.resetLevel();
+                GameState.resetCurrentState();
                 updateUI();
             }
         });
         window.add(resetButton).pad(10).row();
+    }
+
+    private void addSpeedButton(VisWindow window) {
+        VisTextButton speedButton = new VisTextButton("5X Speed");
+        speedButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                GameManager.toggleGameSpeed();
+            }
+        });
+        window.add(speedButton).pad(10).row();
     }
 
 
@@ -153,35 +167,37 @@ public class GameUI {
         victoryWindow.clear();
 
         GameState gameState = GameManager.getGameState();
-        int goalBlueBall = gameState.getGoalBlueBall();
-        int goalRedBall = gameState.getGoalRedBall();
+        List<Integer> requireGoal = gameState.getRequireGoal();
+        List<Integer> currentState = gameState.getCurrentState();
 
-        // Create tables for blue and red balls
-        VisTable blueBallTable = createBallTable("Blue Balls:", goalBlueBall, Color.BLUE);
-        VisTable redBallTable = createBallTable("Red Balls:", goalRedBall, Color.RED);
+        // Create tables for required and current outputs
+        VisTable requiredOutputTable = createOutputTable("Output Requirement:", requireGoal);
+        VisTable currentOutputTable = createOutputTable("Current Output:", currentState);
 
         // Add the tables to the victory window
-        victoryWindow.add(blueBallTable).left().pad(2).row();
-        victoryWindow.add(redBallTable).left().pad(2).row();
+        victoryWindow.add(requiredOutputTable).left().pad(2).row();
+        victoryWindow.add(currentOutputTable).left().pad(2).row();
 
         victoryWindow.pack();
     }
 
-    private VisTable createBallTable(String label, int goalBall, Color color) {
+    // This method creates a table to display the output balls
+    private VisTable createOutputTable(String label, List<Integer> output) {
         VisTable table = new VisTable();
         table.left().top();
 
         // Add label
-        VisLabel ballLabel = new VisLabel(label);
-        table.add(ballLabel).left().pad(2).row();
+        VisLabel outputLabel = new VisLabel(label);
+        table.add(outputLabel).left().pad(2).row();
 
-        // Create a new table for the balls
+        // Create a new table for the output balls
         VisTable ballsTable = new VisTable();
         ballsTable.left().top();
 
         // Add balls to the balls table
-        for (int i = 0; i < 8; i++) {
-            VisImage ballImage = createBallImage(i < goalBall, color);
+        for (int value : output) {
+            Color color = value == 0 ? Color.BLUE : (value == 1 ? Color.RED : Color.GRAY);  // Gray for default
+            VisImage ballImage = createBallImage(true, color);
             ballsTable.add(ballImage).size(20).pad(2);
         }
 
@@ -191,13 +207,16 @@ public class GameUI {
         return table;
     }
 
+    // This method creates a ball image with the specified color
     private VisImage createBallImage(boolean isActive, Color color) {
         String texturePath;
         if (isActive) {
             if (color == Color.BLUE) {
                 texturePath = "blue_ball.png";
-            } else {
+            } else if (color == Color.RED) {
                 texturePath = "red_ball.png";
+            } else {
+                texturePath = "gray_ball.png";
             }
         } else {
             texturePath = "gray_ball.png";
@@ -206,7 +225,7 @@ public class GameUI {
         return new VisImage(ballTexture);
     }
 
-
+    // This method updates the UI components
     public void updateUI() {
         Level currentLevel = LevelManager.getCurrentLevel();
         if (currentLevel != null) {
@@ -216,14 +235,13 @@ public class GameUI {
                 int remainingCount = currentLevel.getLeftComponentCount(componentType);
                 label.setText("Left: " + remainingCount);
 
-                // Update button state based on remaining count
                 VisTextButton button = (VisTextButton) label.getParent().getChildren().get(0);
                 if (remainingCount <= 0) {
                     button.setDisabled(true);
                     button.setColor(Color.DARK_GRAY);
                 } else {
                     button.setDisabled(false);
-                    button.setColor(Color.WHITE); // or any color indicating it's active
+                    button.setColor(Color.WHITE);
                 }
             }
         }
@@ -234,13 +252,19 @@ public class GameUI {
                 break;
             }
         }
+
+        if (GameState.checkOutput()) {
+            showErrorOutputDialog();
+        }
+
     }
+
 
     public void showLevelCompleteDialog() {
         VisDialog dialog = new VisDialog("Level Complete") {
             @Override
             protected void result(Object object) {
-                GameManager.startGame(game,LevelManager.getCurrentLevelNumber()+1);
+                GameManager.startGame(game, LevelManager.getCurrentLevelNumber() + 1);
                 updateUI();
             }
         };
@@ -249,4 +273,43 @@ public class GameUI {
         dialog.show(uiStage);
     }
 
+    private void showErrorOutputDialog() {
+        if (isErrorDialogShown) {
+            return; // Prevent multiple dialogs
+        }
+        isErrorDialogShown = true;
+
+        GameManager.pauseGame(); // Pause the game
+
+        VisDialog dialog = new VisDialog("Configuration Error") {
+            @Override
+            protected void result(Object object) {
+                if (object.equals("resetBalls")) {
+                    GameState.resetCurrentState();
+                    MainGame.getUiManager().updateUI();
+                } else if (object.equals("resetLevel")) {
+                    GameManager.resetLevel();
+                    GameState.resetCurrentState();
+                    MainGame.getUiManager().updateUI();
+                }
+                GameManager.resumeGame(); // Resume the game
+                isErrorDialogShown = false;
+            }
+
+            @Override
+            public void hide() {
+                super.hide();
+                GameManager.resumeGame(); // Resume the game if dialog is closed without selecting an option
+                isErrorDialogShown = false;
+            }
+        };
+        dialog.text("The current ball output does not match the required configuration.\nWould you like to try again?");
+        dialog.button("Reset Balls", "resetBalls");
+        dialog.button("Reset Level", "resetLevel");
+        dialog.show(uiStage);
+    }
+
+
+
 }
+

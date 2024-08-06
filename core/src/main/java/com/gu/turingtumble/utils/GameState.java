@@ -3,49 +3,57 @@ package com.gu.turingtumble.utils;
 import java.util.*;
 
 public class GameState {
-    private int goalBlueBall;
-    private int goalRedBall;
-
+    private static List<Integer> requireGoal;
+    private static List<Integer> currentState;
 
 
     public GameState() {
-        this.goalBlueBall = 0;
-        this.goalRedBall = 0;
+        requireGoal = new ArrayList<>();
+        currentState = new ArrayList<>(Collections.nCopies(8, -1));
     }
 
-    public int getGoalBlueBall() {
-        return goalBlueBall;
+    public List<Integer> getRequireGoal() {
+        return requireGoal;
     }
 
-    public void setGoalBlueBall(int goalBlueBall) {
-        this.goalBlueBall = goalBlueBall;
+    public void setRequireGoal(List<Integer> requireGoal) {
+        GameState.requireGoal = requireGoal;
     }
 
-    public int getGoalRedBall() {
-        return goalRedBall;
+    public List<Integer> getCurrentState() {
+        return currentState;
     }
 
-    public void setGoalRedBall(int goalRedBall) {
-        this.goalRedBall = goalRedBall;
+    public void setCurrentState(List<Integer> currentState) {
+        GameState.currentState = currentState;
     }
 
-    public void adjustBlueBallNum() {
-        if (this.goalBlueBall > 0) {
-            setGoalBlueBall(this.goalBlueBall - 1);
+    public void addCurrentState(int state) {
+        for (int i = 0; i < currentState.size(); i++) {
+            if (currentState.get(i) == -1) {
+                currentState.set(i, state);
+                break;
+            }
         }
-
     }
 
-    public void adjustRedBallNum() {
-        setGoalRedBall(this.goalRedBall - 1);
+    public static void resetCurrentState() {
+        currentState = new ArrayList<>(Collections.nCopies(8, -1));
     }
 
-
-    public void reset() {
-        this.goalBlueBall = 0;
-        this.goalRedBall = 0;
+    public static boolean isComplete() {
+        return requireGoal.equals(currentState);
     }
 
-
-
+    public static boolean checkOutput() {
+        for (int i = 0; i < requireGoal.size(); i++) {
+            if (currentState.get(i) == -1) {
+                continue;
+            }
+            if (!Objects.equals(requireGoal.get(i), currentState.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

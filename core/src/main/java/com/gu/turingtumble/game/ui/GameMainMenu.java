@@ -29,6 +29,8 @@ public class GameMainMenu {
         VisWindow window = new VisWindow("Main Menu");
         table.add(window).expand().center();
 
+
+
         VisTextButton newGameButton = new VisTextButton("New Game");
         newGameButton.addListener(new ClickListener() {
             @Override
@@ -40,11 +42,12 @@ public class GameMainMenu {
         window.add(newGameButton).pad(10).row();
 
 
+
         VisTextButton levelSelectButton = new VisTextButton("Level Select");
         levelSelectButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.getUiManager().showLevelSelectMenu();
+                MainGame.getUiManager().showLevelSelectMenu();
             }
         });
         window.add(levelSelectButton).pad(10).row();

@@ -5,18 +5,17 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.gu.turingtumble.game.ui.GameUIManager;
-import com.gu.turingtumble.utils.GameBoard;
+
 import com.gu.turingtumble.utils.GameManager;
 
 public class MainGame extends Game {
-
     public static GameUIManager uiManager;
-
 
     @Override
     public void create() {
         uiManager = new GameUIManager(this);
-        uiManager.showMainMenu();                   // Set screen to MainMenu
+        uiManager.showMainMenu();                                                                                       // Set screen to MainMenu
+        System.out.println("Current Delta Time: " + Gdx.graphics.getDeltaTime());       //for test
     }
 
     @Override
@@ -46,13 +45,10 @@ public class MainGame extends Game {
 
     public void restartGame() {
         GameManager.clearAll();
-        GameManager.initialise(this);
-//        setScreen(new GameBoard(this));
+        MainGame.getUiManager().showMainMenu();
     }
 
-
-
+    public void restartApplication() {
+        Gdx.app.exit();
+    }
 }
-
-
-

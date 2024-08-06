@@ -15,6 +15,7 @@ import static com.gu.turingtumble.utils.GameConstant.*;
 
 
 public class GameManager {
+    //    DATA
     private static World world;
     private static List<Ball> redBalls = new ArrayList<>();
     private static List<Ball> blueBalls = new ArrayList<>();
@@ -28,6 +29,10 @@ public class GameManager {
     private static GameBoard gameBoard;
     private static GameState gameState;
 
+
+    //    FUNCTIONAL
+    private static float timeScale = 1.0f;
+    private static boolean isPaused = false;
     //    SAVE MESSAGE
     private static final String SAVE_FILE = "player_save.dat";
     private static Map<String, Integer> saves = new HashMap<>();
@@ -105,7 +110,12 @@ public class GameManager {
     }
 
     public static void updateGameLogic(float delta) {
+        if (isPaused) {
+            return;
+        }
 
+        delta = delta * 12;
+        delta *= timeScale;
         updateStopperLogic();
 
 /**
@@ -113,7 +123,7 @@ public class GameManager {
  *         6：速度迭代的次數，用於更準確地計算物體的速度
  *         2：位置迭代的次數，用於更準確地計算物體的位置
  */
-        world.step(1 / 15f, 6, 10);
+        world.step(delta, 10, 10);
 
         for (GameComponents component : components.values()) {
             component.update(delta);
@@ -260,6 +270,17 @@ public class GameManager {
         return false;
     }
 
+    public static void toggleGameSpeed() {
+        if (timeScale == 1.0f) {
+            timeScale = 5.0f;  // 5 times faster
+            System.out.println("5x Speed");
+        } else {
+            timeScale = 1.0f;  // Normal speed
+            System.out.println("1x Speed");
+        }
+    }
+
+
     public static Map<Vector2, GameComponents> getComponents() {
         return components;
     }
@@ -314,7 +335,7 @@ public class GameManager {
     }
 
 
-    public static boolean toggleComponentMirror(Vector2 position) {
+    public static boolean switchComponentFunction(Vector2 position) {
         for (Map.Entry<Vector2, GameComponents> entry : components.entrySet()) {
             Vector2 slotPosition = entry.getKey();
             GameComponents component = entry.getValue();
@@ -341,12 +362,7 @@ public class GameManager {
             GameManager.getWorld().destroyBody(oldComponent.getBody());
         }
 
-
-        GameComponents newComponent = ComponentFactory.createComponent(
-            newComponentType,
-            slotPosition.x,
-            slotPosition.y
-        );
+        GameComponents newComponent = ComponentFactory.createComponent(newComponentType, slotPosition.x, slotPosition.y);
         components.put(slotPosition, newComponent);
     }
 
@@ -415,15 +431,18 @@ public class GameManager {
         clearComponents();
         clearBalls();
         clearBallStoppersAndSensor();
+
         if (world != null) {
             world.dispose();
             world = null;
         }
+
         redBalls.clear();
         blueBalls.clear();
         slotPositions.clear();
         components.clear();
         selectedComponent = null;
+
         redBallStopper = null;
         blueBallStopper = null;
         bottomSensor = null;
@@ -484,6 +503,19 @@ public class GameManager {
     /**
      *
      */
+
+    public static void pauseGame() {
+        isPaused = true;
+    }
+
+    public static void resumeGame() {
+        isPaused = false;
+    }
+
+    public static boolean isGamePaused() {
+        return isPaused;
+    }
+
 
     public static BallStopper getRedBallStopper() {
         return redBallStopper;
