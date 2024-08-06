@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.levels.LevelManager;
-import com.gu.turingtumble.utils.GameBoard;
+import com.gu.turingtumble.utils.GameManager;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
@@ -39,9 +39,7 @@ public class GameLevelSelectMenu {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     try {
-                        LevelManager.loadLevel(levelNumber);
-                        game.getUiManager().clear();
-                        game.setScreen(new GameBoard(game));
+                        GameManager.startGame(game, levelNumber);
                     } catch (IllegalArgumentException e) {
                         System.err.println("Error loading level: " + e.getMessage());
                     }

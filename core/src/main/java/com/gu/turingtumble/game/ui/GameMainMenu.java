@@ -5,8 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.gu.turingtumble.MainGame;
-import com.gu.turingtumble.levels.LevelManager;
-import com.gu.turingtumble.utils.GameBoard;
+import com.gu.turingtumble.utils.GameManager;
 import com.kotcrab.vis.ui.widget.VisTable;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 import com.kotcrab.vis.ui.widget.VisWindow;
@@ -34,10 +33,10 @@ public class GameMainMenu {
         newGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                LevelManager.loadLevel(1);
-                game.setScreen(new GameBoard(game));
+                GameManager.startGame(game, 1);
             }
         });
+
         window.add(newGameButton).pad(10).row();
 
 

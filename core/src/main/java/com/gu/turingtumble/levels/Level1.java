@@ -15,9 +15,9 @@ public class Level1 implements Level {
         System.out.println("level1 initialized");
         System.out.println(LevelManager.getCurrentLevelNumber());
 
-        basicComponent();
-        currentRampCount = 0;                               //when do "reset" it will become 0 again
         setVictoryCondition();
+        currentRampCount = 0;                               //when do "reset" it will become 0 again
+        basicComponent();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Level1 implements Level {
 
     @Override
     public void setVictoryCondition() {
-        GameManager.getGameState().setGoalBlueBall(REQUIRED_BLUE_BALLS);
+        GameManager.getGameState().setGoalBlueBall(1);
         GameManager.getGameState().setGoalRedBall(0);
     }
 

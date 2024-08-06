@@ -47,7 +47,7 @@ public class MainGame extends Game {
     public void restartGame() {
         GameManager.clearAll();
         GameManager.initialise(this);
-        setScreen(new GameBoard(this));
+//        setScreen(new GameBoard(this));
     }
 
 

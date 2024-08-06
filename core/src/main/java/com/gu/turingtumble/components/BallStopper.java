@@ -26,10 +26,11 @@ public class BallStopper {
     }
 
     private Body createBody(float posX, float posY) {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(posX, posY);
-        Body body = world.createBody(bodyDef);
+        BodyDef def = new BodyDef();
+        def.allowSleep = false;
+        def.type = BodyDef.BodyType.StaticBody;
+        def.position.set(posX, posY);
+        Body body = world.createBody(def);
 
         CircleShape shape = new CircleShape();
         shape.setRadius(RADIUS);

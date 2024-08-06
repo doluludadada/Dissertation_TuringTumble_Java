@@ -215,6 +215,16 @@ public class GameUI {
                 VisLabel label = entry.getValue();
                 int remainingCount = currentLevel.getLeftComponentCount(componentType);
                 label.setText("Left: " + remainingCount);
+
+                // Update button state based on remaining count
+                VisTextButton button = (VisTextButton) label.getParent().getChildren().get(0);
+                if (remainingCount <= 0) {
+                    button.setDisabled(true);
+                    button.setColor(Color.DARK_GRAY);
+                } else {
+                    button.setDisabled(false);
+                    button.setColor(Color.WHITE); // or any color indicating it's active
+                }
             }
         }
 
@@ -230,8 +240,7 @@ public class GameUI {
         VisDialog dialog = new VisDialog("Level Complete") {
             @Override
             protected void result(Object object) {
-                game.restartGame();
-                LevelManager.loadLevel(LevelManager.getCurrentLevelNumber() + 1);
+                GameManager.startGame(game,LevelManager.getCurrentLevelNumber()+1);
                 updateUI();
             }
         };

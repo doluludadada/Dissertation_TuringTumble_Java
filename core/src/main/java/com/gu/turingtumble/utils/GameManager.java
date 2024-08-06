@@ -18,7 +18,8 @@ public class GameManager {
     private static World world;
     private static List<Ball> redBalls = new ArrayList<>();
     private static List<Ball> blueBalls = new ArrayList<>();
-    private static Map<Vector2, Boolean> slotPositions = new HashMap<>(); // true for slots with arc, false for regular slots
+    private static Map<Vector2, Boolean> slotPositions = new HashMap<>();                                 // true for slots with arc, false for regular slots
+    private static Map<Vector2, Body> slotBodies = new HashMap<>();
     private static Map<Vector2, GameComponents> components = new HashMap<>();
     private static String selectedComponent;
     private static BallStopper redBallStopper;
@@ -32,9 +33,19 @@ public class GameManager {
     private static Map<String, Integer> saves = new HashMap<>();
 
 
+    public static void startGame(MainGame game, int levelNum) {
+        clearAll();
+        initialise(game);
+        game.setScreen(gameBoard);
+        LevelManager.loadLevel(levelNum);
+        MainGame.getUiManager().updateUI();
+    }
+
+
     public static void initialise(MainGame game) {
         initialiseWorld();
         initialiseBoard(game);
+        createAllSlotBody(world);
         initialiseBallStoppers();
         initialiseBalls();
         gameState = new GameState();
@@ -76,8 +87,6 @@ public class GameManager {
         for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.get(); i++) {
             blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
         }
-
-
     }
 
     private static void initialiseBallStoppers() {
@@ -255,7 +264,6 @@ public class GameManager {
         return components;
     }
 
-
     public static Body createBody(World world, BodyDef.BodyType bodyType, float pos_x, float pos_y, String name) {
         // 1. Create a BodyDef
         BodyDef bd = new BodyDef();
@@ -278,12 +286,12 @@ public class GameManager {
             }
 
 
-            Body slotBody = ComponentFactory.getSlotBodyForComponent(component);
-            if (slotBody != null) {
-                world.destroyBody(slotBody);
-            }
+//            Body slotBody = ComponentFactory.getSlotBodyForComponent(component);
+//            if (slotBody != null) {
+//                world.destroyBody(slotBody);
+//            }
 
-            ComponentFactory.removeSlotBodyForComponent(component);
+//            ComponentFactory.removeSlotBodyForComponent(component);
         }
         components.clear();
     }
@@ -313,6 +321,7 @@ public class GameManager {
         }
     }
 
+
     public static boolean toggleComponentMirror(Vector2 position) {
         for (Map.Entry<Vector2, GameComponents> entry : components.entrySet()) {
             Vector2 slotPosition = entry.getKey();
@@ -336,12 +345,11 @@ public class GameManager {
 
 
     private static void replaceComponent(Vector2 slotPosition, String newComponentType, GameComponents oldComponent) {
-
-        Body slotBody = ComponentFactory.getSlotBodyForComponent(oldComponent);
-        if (slotBody != null) {
-            GameManager.getWorld().destroyBody(slotBody);
-            ComponentFactory.removeSlotBodyForComponent(oldComponent);
-        }
+//        Body slotBody = ComponentFactory.getSlotBodyForComponent(oldComponent);
+//        if (slotBody != null) {
+//            GameManager.getWorld().destroyBody(slotBody);
+//            ComponentFactory.removeSlotBodyForComponent(oldComponent);
+//        }
 
         if (oldComponent.getBody() != null) {
             GameManager.getWorld().destroyBody(oldComponent.getBody());
@@ -356,6 +364,35 @@ public class GameManager {
         components.put(slotPosition, newComponent);
     }
 
+    public static void createAllSlotBody(World world) {
+        for (Vector2 slotPos : slotPositions.keySet()) {
+            slotBodies.put(slotPos, createSlotBody(slotPos.x, slotPos.y, world));
+        }
+    }
+
+    private static Body createSlotBody(float x, float y, World world) {
+        BodyDef slotDef = new BodyDef();
+        slotDef.type = BodyDef.BodyType.KinematicBody;
+        slotDef.position.set(x, y);
+        Body slotBody = world.createBody(slotDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(5f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0;
+        fixtureDef.friction = 0;
+        fixtureDef.restitution = 0;
+        slotBody.createFixture(fixtureDef);
+        shape.dispose();
+
+        return slotBody;
+    }
+
+    public static Body getSlotBody(Vector2 position) {
+        return slotBodies.get(position);
+    }
 
     public static void clearBalls() {
         for (Ball ball : redBalls) {
@@ -436,8 +473,8 @@ public class GameManager {
     /**
      * Updates the record for a specific level.
      *
-     * @param level    The level number
-     * @param score    The score to save
+     * @param level The level number
+     * @param score The score to save
      */
     public static void updateRecord(int level, int score) {
         saves.put("Level " + level, score);
@@ -447,8 +484,8 @@ public class GameManager {
     /**
      * Gets the record for a specific level.
      *
-     * @param level    The level number
-     * @return         The score of the specified level
+     * @param level The level number
+     * @return The score of the specified level
      */
     public static int getRecord(int level) {
         return saves.getOrDefault("Level " + level, 0);
@@ -503,6 +540,10 @@ public class GameManager {
 
     public static BottomSensor getBottomSensor() {
         return bottomSensor;
+    }
+
+    public static Map<Vector2, Boolean> getSlotPositions() {
+        return slotPositions;
     }
 
 }

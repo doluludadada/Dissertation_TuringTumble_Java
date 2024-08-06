@@ -36,7 +36,6 @@ public class GameBoard implements Screen, ContactListener {
     private final int CELL_SIZE = GameConstant.CELL_SIZE.get();
 
 
-
     public GameBoard(MainGame game) {
         this.uiManager = game.getUiManager();
         camera = new OrthographicCamera();
@@ -47,6 +46,7 @@ public class GameBoard implements Screen, ContactListener {
         Gdx.gl.glEnable(GL20.GL_BLEND);                                                                                 //anti-aliasing
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
+        draw();
     }
 
 
@@ -55,13 +55,14 @@ public class GameBoard implements Screen, ContactListener {
         GameManager.getWorld().setContactListener(this);
         Gdx.input.setInputProcessor(uiManager.getUiStage());
         uiManager.showGameUI();
+
+
     }
 
     @Override
     public void render(float delta) {
         update(delta);
         draw();
-
     }
 
 
@@ -159,7 +160,7 @@ public class GameBoard implements Screen, ContactListener {
         drawComponents();
         drawBottomSensor();
         drawBalls();
-//        debugRenderer.render(GameManager.getWorld(), camera.combined);
+        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {
@@ -348,7 +349,6 @@ public class GameBoard implements Screen, ContactListener {
         body.createFixture(fixtureDef);
         shape.dispose();
     }
-
 
 
     public float getCameraWidth() {

@@ -31,7 +31,6 @@ public class GameUIManager {
         this.game = game;
         initialiseStages();
         initialiseVisUI();
-        GameManager.initialise(game);
     }
 
 
