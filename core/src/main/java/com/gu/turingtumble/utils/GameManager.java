@@ -123,7 +123,7 @@ public class GameManager {
  *         6：速度迭代的次數，用於更準確地計算物體的速度
  *         2：位置迭代的次數，用於更準確地計算物體的位置
  */
-        world.step(delta, 10, 10);
+        world.step(delta, 5, 5);
 
         for (GameComponents component : components.values()) {
             component.update(delta);
@@ -350,7 +350,7 @@ public class GameManager {
                     replaceComponent(slotPosition, "MirrorRamp", component);
                     return true;
                 }
-                break;
+
             }
         }
         return false;

@@ -34,6 +34,7 @@ public class LevelManager {
             case 2 -> new Level2();
             case 3 -> new Level3();
             case 4 -> new Level4();
+            case 5 -> new Level5();
             default -> throw new IllegalArgumentException("Unknown level: " + levelNumber);
         };
 
@@ -68,7 +69,7 @@ public class LevelManager {
     }
 
     private static void unlockAllLevels() {
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 5; i++) {
             unlockedLevels.add(i);
         }
     }

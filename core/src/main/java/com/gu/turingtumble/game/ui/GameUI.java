@@ -144,7 +144,7 @@ public class GameUI {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameManager.resetLevel();
-                GameState.resetCurrentState();
+                GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
                 updateUI();
             }
         });
@@ -285,11 +285,11 @@ public class GameUI {
             @Override
             protected void result(Object object) {
                 if (object.equals("resetBalls")) {
-                    GameState.resetCurrentState();
+                    GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
                     MainGame.getUiManager().updateUI();
                 } else if (object.equals("resetLevel")) {
                     GameManager.resetLevel();
-                    GameState.resetCurrentState();
+                    GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
                     MainGame.getUiManager().updateUI();
                 }
                 GameManager.resumeGame(); // Resume the game

@@ -21,7 +21,7 @@ public class MirrorRamp extends Ramp implements GameComponents {
         rampBody = GameManager.createBody(world, BodyDef.BodyType.DynamicBody, pos_x, pos_y, "Green2");
 
         FixtureDef fd = new FixtureDef();
-        fd.density = 2;
+        fd.density = 2f;
         fd.friction = 10f;
         fd.restitution = 0f;
 

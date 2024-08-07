@@ -3,13 +3,11 @@ package com.gu.turingtumble.utils;
 import java.util.*;
 
 public class GameState {
-    private static List<Integer> requireGoal;
-    private static List<Integer> currentState;
-
+    private static List<Integer> requireGoal = new ArrayList<>();
+    private static List<Integer> currentState = new ArrayList<>();
 
     public GameState() {
-        requireGoal = new ArrayList<>();
-        currentState = new ArrayList<>(Collections.nCopies(8, -1));
+        // Initialize with empty lists; specific levels will set the appropriate size and values.
     }
 
     public List<Integer> getRequireGoal() {
@@ -17,7 +15,8 @@ public class GameState {
     }
 
     public void setRequireGoal(List<Integer> requireGoal) {
-        GameState.requireGoal = requireGoal;
+        GameState.requireGoal = new ArrayList<>(requireGoal);
+        resetCurrentState(requireGoal.size());
     }
 
     public List<Integer> getCurrentState() {
@@ -25,7 +24,7 @@ public class GameState {
     }
 
     public void setCurrentState(List<Integer> currentState) {
-        GameState.currentState = currentState;
+        GameState.currentState = new ArrayList<>(currentState);
     }
 
     public void addCurrentState(int state) {
@@ -37,8 +36,8 @@ public class GameState {
         }
     }
 
-    public static void resetCurrentState() {
-        currentState = new ArrayList<>(Collections.nCopies(8, -1));
+    public static void resetCurrentState(int size) {
+        currentState = new ArrayList<>(Collections.nCopies(size, -1));
     }
 
     public static boolean isComplete() {

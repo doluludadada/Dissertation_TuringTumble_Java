@@ -64,7 +64,7 @@ public class Crossover implements GameComponents {
         Vector2 position = crossoverBody.getPosition().sub(crossoverOrigin);
         crossoverSprite.setPosition(position.x, position.y);
         crossoverSprite.draw(batch);
-        System.out.println("crossover origin: " + crossoverOrigin.x + ", " + crossoverOrigin.y);
+//        System.out.println("crossover origin: " + crossoverOrigin.x + ", " + crossoverOrigin.y);
     }
 
 

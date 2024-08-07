@@ -4,23 +4,21 @@ import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Level2 implements Level {
-    private static final int MAX_RAMP_COUNT = 5;
-    private static final int REQUIRED_BLUE_BALLS = 8;
-    private int currentRampCount = 0;
+public class Level2 extends Level {
 
-
-    @Override
-    public void initialise() {
-        setVictoryCondition();
-        basicComponent();
-        currentRampCount = 0;
+    public Level2() {
+        super();
+        Map<String, Integer> limits = new HashMap<>();
+        limits.put("Ramp", 5);
+        setComponentLimits(limits);
     }
 
     @Override
     public void reset(MainGame game) {
-
+        GameManager.resetLevel();
     }
 
     @Override
@@ -34,32 +32,9 @@ public class Level2 implements Level {
         GameManager.addComponent(5, 9);
     }
 
-
-    @Override
-    public boolean componentLimit(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            return currentRampCount < MAX_RAMP_COUNT;
-        }
-        return true;
-    }
-
-    @Override
-    public int getLeftComponentCount(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            return MAX_RAMP_COUNT - currentRampCount;
-        }
-        return 0;
-    }
-
-    @Override
-    public void plusComponentCount(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            currentRampCount++;
-        }
-    }
-
     @Override
     public void setVictoryCondition() {
         GameManager.getGameState().setRequireGoal(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
     }
 }
+

@@ -4,34 +4,30 @@ import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Level4 implements Level {
+public class Level4 extends Level {
 
-    private static final int MAX_RAMP_COUNT = 13;
-    private int currentRampCount = 0;
-
-    @Override
-    public void initialise() {
-        setVictoryCondition();
-        currentRampCount = 0;
-        basicComponent();
+    public Level4() {
+        super();
+        Map<String, Integer> limits = new HashMap<>();
+        limits.put("Ramp", 13);
+        setComponentLimits(limits);
     }
 
     @Override
     public void reset(MainGame game) {
-
+        GameManager.resetLevel();
     }
 
     @Override
     public void basicComponent() {
-        // Ramp
         GameManager.setSelectedComponent("Ramp");
         GameManager.addComponent(0, 8);
         GameManager.addComponent(1, 9);
         GameManager.addComponent(2, 10);
 
-
-        // Mirror Ramp
         GameManager.setSelectedComponent("MirrorRamp");
         GameManager.addComponent(0, 4);
         GameManager.addComponent(1, 3);
@@ -39,35 +35,8 @@ public class Level4 implements Level {
     }
 
     @Override
-    public boolean isComplete() {
-        return Level.super.isComplete();
-    }
-
-    @Override
-    public boolean componentLimit(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            return currentRampCount < MAX_RAMP_COUNT;
-        }
-        return true;
-    }
-
-    @Override
-    public int getLeftComponentCount(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            return MAX_RAMP_COUNT - currentRampCount;
-        }
-        return 0;
-    }
-
-    @Override
-    public void plusComponentCount(String componentType) {
-        if ("Ramp".equals(componentType)) {
-            currentRampCount++;
-        }
-    }
-
-    @Override
     public void setVictoryCondition() {
         GameManager.getGameState().setRequireGoal(Arrays.asList(1, 0, 0, 0, 0, 0, 0, 0));
     }
 }
+
