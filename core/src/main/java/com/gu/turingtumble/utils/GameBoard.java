@@ -166,7 +166,7 @@ public class GameBoard implements Screen, ContactListener {
         drawComponents();
         drawBottomSensor();
         drawBalls();
-        debugRenderer.render(GameManager.getWorld(), camera.combined);
+//        debugRenderer.render(GameManager.getWorld(), camera.combined);
     }
 
     private void drawBalls() {

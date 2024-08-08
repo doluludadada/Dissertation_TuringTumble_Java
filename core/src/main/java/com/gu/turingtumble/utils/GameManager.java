@@ -119,8 +119,6 @@ public class GameManager {
         int velocityIterations = 6;
         int positionIterations = 6;
         delta *= timeScale;
-        velocityIterations *= (int) timeScale;
-        positionIterations *= (int) timeScale;
         updateStopperLogic();
 
 /**

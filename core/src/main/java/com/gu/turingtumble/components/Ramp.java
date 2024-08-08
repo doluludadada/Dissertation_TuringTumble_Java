@@ -142,7 +142,6 @@ public class Ramp implements GameComponents {
     protected void resetRamp() {
         revoluteJoint.setLimits(0, (float) Math.toRadians(25));
         isScheduledToReset = false;
-        System.out.println("leave contact, count: " + contactBodies.size());
     }
 
     protected void scheduleResetRamp() {
@@ -152,10 +151,10 @@ public class Ramp implements GameComponents {
                 if (contactBodies.isEmpty()) {
                     resetRamp();
                 } else {
-                    isScheduledToReset = false; // 如果仍有接觸，重設調度狀態
+                    isScheduledToReset = false;
                 }
             }
-        }, 2f); // 延遲1秒後檢查是否需要重設
+        }, 2f);
     }
 
 }

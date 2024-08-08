@@ -21,6 +21,7 @@ public class GameUIManager {
     private GameUI gameUI;
 
 
+
     /**
      * Constructor for GameUIManager. Initializes the stages and loads VisUI.
      *
@@ -31,6 +32,7 @@ public class GameUIManager {
         this.game = game;
         initialiseStages();
         initialiseVisUI();
+        GameHints.getInstance().initialise(uiStage);
     }
 
 
@@ -124,4 +126,7 @@ public class GameUIManager {
             gameUI.updateUI();
         }
     }
+
+
+
 }

@@ -1,5 +1,8 @@
 package com.gu.turingtumble.levels;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.gu.turingtumble.MainGame;
+import com.gu.turingtumble.game.ui.GameHints;
 import com.gu.turingtumble.utils.GameManager;
 import com.gu.turingtumble.utils.GameState;
 
@@ -9,12 +12,23 @@ import java.util.Map;
 
 public class Level1 extends Level {
 
+
+
     public Level1() {
         super();
         Map<String, Integer> limits = new HashMap<>();
         limits.put("Ramp", 4);
         setComponentLimits(limits);
+        GameHints.getInstance();
     }
+
+    @Override
+    public void initialise() {
+        GameHints.getInstance().showNextHint();
+        super.initialise();
+
+    }
+
 
     @Override
     public void setAllowedBallStopper() {
