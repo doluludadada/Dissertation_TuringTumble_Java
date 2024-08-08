@@ -63,6 +63,7 @@ public class GameUI {
         addComponentButton(window, "GearBit");
         //functional buttons
         addSpeedButton(window);
+        addSelectLevelButton(window);
         addResetButton(window);
         addBackButton(window);
 
@@ -134,6 +135,23 @@ public class GameUI {
 
 
     /**
+     * Adds a select level button to the window.
+     *
+     * @param window The window to which the button will be added.
+     */
+    private void addSelectLevelButton(VisWindow window) {
+        VisTextButton selectLevelButton = new VisTextButton("Select Level");
+        selectLevelButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                new GameLevelSelectMenu(game, uiStage); // Show the level select menu
+            }
+        });
+        window.add(selectLevelButton).pad(10).row();
+    }
+
+
+    /**
      * Adds a reset button to the window.
      *
      * @param window The window to which the button will be added.
@@ -144,7 +162,7 @@ public class GameUI {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameManager.resetLevel();
-                GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
+                GameState.getInstance().resetCurrentState(GameManager.getGameState().getRequireGoal().size());
                 updateUI();
             }
         });
@@ -253,7 +271,7 @@ public class GameUI {
             }
         }
 
-        if (GameState.checkOutput()) {
+        if (GameState.getInstance().checkOutput()) {
             showErrorOutputDialog();
         }
 
@@ -285,11 +303,15 @@ public class GameUI {
             @Override
             protected void result(Object object) {
                 if (object.equals("resetBalls")) {
-                    GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
+                    GameState.getInstance().resetCurrentState(GameManager.getGameState().getRequireGoal().size());
+                    GameManager.clearBalls();
+                    GameManager.clearBallStoppersAndSensor();
+                    GameManager.initialiseBallStoppers();
+                    GameManager.initialiseBalls();
                     MainGame.getUiManager().updateUI();
                 } else if (object.equals("resetLevel")) {
                     GameManager.resetLevel();
-                    GameState.resetCurrentState(GameManager.getGameState().getRequireGoal().size());
+                    GameState.getInstance().resetCurrentState(GameManager.getGameState().getRequireGoal().size());
                     MainGame.getUiManager().updateUI();
                 }
                 GameManager.resumeGame(); // Resume the game
@@ -308,7 +330,6 @@ public class GameUI {
         dialog.button("Reset Level", "resetLevel");
         dialog.show(uiStage);
     }
-
 
 
 }

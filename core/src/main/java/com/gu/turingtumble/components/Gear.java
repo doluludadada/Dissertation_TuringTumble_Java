@@ -19,4 +19,9 @@ public class Gear implements GameComponents {
     public Body getBody() {
         return null;
     }
+
+    @Override
+    public void dispose() {
+
+    }
 }

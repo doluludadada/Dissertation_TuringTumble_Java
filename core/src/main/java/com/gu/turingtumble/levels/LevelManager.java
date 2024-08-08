@@ -26,7 +26,12 @@ public class LevelManager {
     }
 
     public static void loadLevel(int levelNumber) {
-        GameManager.clearComponents();
+
+        if (currentLevel != null) {
+            currentLevel.dispose(); // Dispose the current level's resources
+        }
+
+
         currentLevelNumber = levelNumber;
 
         currentLevel = switch (levelNumber) {

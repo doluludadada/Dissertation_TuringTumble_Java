@@ -1,6 +1,7 @@
 package com.gu.turingtumble.levels;
 
 import com.gu.turingtumble.MainGame;
+import com.gu.turingtumble.utils.GameManager;
 import com.gu.turingtumble.utils.GameState;
 
 import java.util.HashMap;
@@ -28,17 +29,24 @@ public abstract class Level {
 
     public void initialise() {
         System.out.println("level initialized");
+//        GameManager.initialiseBalls();
+        GameState.getInstance().reset();
         setVictoryCondition();
         resetComponentCounts();
         basicComponent();
+        setAllowedBallStopper();
     }
 
-    public abstract void reset(MainGame game);
+    public abstract void setAllowedBallStopper();
+
+    public void reset(MainGame game){
+        GameManager.resetLevel();
+    }
 
     public abstract void basicComponent();
 
     public boolean isComplete() {
-        return GameState.isComplete();
+        return GameState.getInstance().isComplete();
     }
 
     public boolean componentLimit(String componentType) {
@@ -54,5 +62,14 @@ public abstract class Level {
     }
 
     public abstract void setVictoryCondition();
+
+    public void dispose() {
+        GameManager.clearComponents();
+//        GameManager.clearBalls();
+//        GameManager.clearBallStoppersAndSensor();
+//        GameManager.clearAll();
+    }
+
+
 }
 

@@ -73,7 +73,7 @@ public class BottomSensor {
         Vector2 sensorPosition = sensorBody.getPosition();
 
         int ballColor = ballData.getBallColour().equals(Color.BLUE) ? 0 : 1;
-        GameManager.getGameState().addCurrentState(ballColor);
+        GameManager.getGameState().addCurrentOutput(ballColor);
 
         if (position.x < sensorPosition.x) {
             GameManager.getBlueBallStopper().launchBall();

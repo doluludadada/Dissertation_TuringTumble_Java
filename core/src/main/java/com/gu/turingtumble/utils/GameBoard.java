@@ -130,16 +130,22 @@ public class GameBoard implements Screen, ContactListener {
     private void handleBallStopperClick(Vector3 touchPos) {
         BallStopper redBallStopper = GameManager.getRedBallStopper();
         BallStopper blueBallStopper = GameManager.getBlueBallStopper();
+        int allowedStopper = GameManager.getGameState().getAllowedBallStopper();
 
-        if (redBallStopper != null && isTouchingBallStopper(touchPos, redBallStopper)) {
+        if (isAllowedAndTouched(allowedStopper, 1, touchPos, redBallStopper)) {
             redBallStopper.launchBall();
             return;
         }
-        if (blueBallStopper != null && isTouchingBallStopper(touchPos, blueBallStopper)) {
+        if (isAllowedAndTouched(allowedStopper, 0, touchPos, blueBallStopper)) {
             blueBallStopper.launchBall();
-            return;
         }
     }
+
+    private boolean isAllowedAndTouched(int allowedStopper, int stopperType, Vector3 touchPos, BallStopper stopper) {
+        return (allowedStopper == -1 || allowedStopper == stopperType) &&
+            stopper != null && isTouchingBallStopper(touchPos, stopper);
+    }
+
 
     private boolean isTouchingBallStopper(Vector3 touchPos, BallStopper stopper) {
         Vector2 stopperPos = stopper.getBody().getPosition();
@@ -240,8 +246,8 @@ public class GameBoard implements Screen, ContactListener {
         float[][] Lines = {{width / 2, height, width / 2, height - 50},                                                 // 上中線
             {width / 2, height - 50, width / 2 - CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 上左斜線
             {width / 2, height - 50, width / 2 + CELL_SIZE * 6, height - 1.4f * CELL_SIZE},                             // 右上斜線
-            {GameConstant.UI_WIDTH.get(), height - 100, (width / 2) - CELL_SIZE * 2.3f, height - CELL_SIZE * 3.1f},     // 左下斜線
-            {width, height + 20, (width / 2) + CELL_SIZE * 2.3f, height - CELL_SIZE * 3.1f},                             // 右下斜線
+            {(GameConstant.UI_WIDTH.get()), (height - 150), ((width / 2) - CELL_SIZE * 2.45F), (height - CELL_SIZE * 3.15f)},         // 左下斜線
+            {width, height - 50, ((width / 2) + CELL_SIZE * 2.45f), (height - CELL_SIZE * 3.15f)},                                        // 右下斜線
             {width, 2 * CELL_SIZE, ((width / 2) + CELL_SIZE * 0.8f), CELL_SIZE},                                        // 右下斜線
             {GameConstant.UI_WIDTH.get(), 2 * CELL_SIZE, ((width / 2) - CELL_SIZE * 0.8f), CELL_SIZE},                  // 左下斜線
         };
@@ -383,16 +389,13 @@ public class GameBoard implements Screen, ContactListener {
         if (userDataA instanceof Ramp && userDataB instanceof Ball) {
             Ramp ramp = (Ramp) userDataA;
             ramp.beginContact(bodyB);
-        } else if (userDataB instanceof Ramp && userDataA instanceof Ball) {
-            Ramp ramp = (Ramp) userDataB;
-            ramp.beginContact(bodyA);
-        } else if (userDataA instanceof BallStopper && userDataB instanceof Ball) {
+        }
+        else if (userDataA instanceof BallStopper && userDataB instanceof Ball) {
             BallStopper ballStopper = (BallStopper) userDataA;
             ballStopper.handleContact(bodyB);
         } else if (userDataA instanceof BottomSensor && userDataB instanceof Ball) {
             BottomSensor bottomSensor = (BottomSensor) userDataA;
             bottomSensor.handleContact(bodyB, true);
-
         }
     }
 
@@ -408,9 +411,6 @@ public class GameBoard implements Screen, ContactListener {
         if (userDataA instanceof Ramp && userDataB instanceof Ball) {
             Ramp ramp = (Ramp) userDataA;
             ramp.endContact(bodyB);
-        } else if (userDataB instanceof Ramp && userDataA instanceof Ball) {
-            Ramp ramp = (Ramp) userDataB;
-            ramp.endContact(bodyA);
         }
     }
 

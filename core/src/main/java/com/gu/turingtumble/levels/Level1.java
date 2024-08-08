@@ -1,8 +1,7 @@
 package com.gu.turingtumble.levels;
 
-
-import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
+import com.gu.turingtumble.utils.GameState;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,8 +17,8 @@ public class Level1 extends Level {
     }
 
     @Override
-    public void reset(MainGame game) {
-        GameManager.resetLevel();
+    public void setAllowedBallStopper() {
+        GameState.getInstance().setAllowedBallStopper(0);
     }
 
     @Override

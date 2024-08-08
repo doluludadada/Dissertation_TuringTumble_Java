@@ -62,18 +62,6 @@ public class MirrorRamp extends Ramp implements GameComponents {
         rampSprite.setSize(RAMP_WIDTH, RAMP_WIDTH * rampSprite.getHeight() / rampSprite.getWidth());
         rampSprite.setOriginCenter();
     }
-
-//    @Override
-//    protected void rotateRamp() {
-//        revoluteJoint.setLimits(0, ROTATION);
-//    }
-//
-//    @Override
-//    protected void resetRamp() {
-//        revoluteJoint.setLimits(0, (float) Math.toRadians(25));
-//        isScheduledToReset = false;
-//        System.out.println("leave contact, count: " + contactBodies.size());
-//    }
 }
 
 

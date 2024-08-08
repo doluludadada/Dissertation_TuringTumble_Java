@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Crossover implements GameComponents {
 
+
     //    MODEL
     private Body crossoverBody;
     private Vector2 crossoverOrigin;
@@ -36,7 +37,7 @@ public class Crossover implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 1;
+        fd.density = 1f;
         fd.friction = 0.5f;
         fd.restitution = 0.3f;
 
@@ -76,5 +77,12 @@ public class Crossover implements GameComponents {
     @Override
     public Body getBody() {
         return crossoverBody;
+    }
+
+    @Override
+    public void dispose() {
+        if (crossoverSprite != null) {
+            crossoverSprite = null;
+        }
     }
 }

@@ -53,7 +53,7 @@ public class GameManager {
         createAllSlotBody(world);
         initialiseBallStoppers();
         initialiseBalls();
-        gameState = new GameState();
+        gameState = GameState.getInstance();
     }
 
 
@@ -94,7 +94,8 @@ public class GameManager {
         }
     }
 
-    private static void initialiseBallStoppers() {
+    public static void initialiseBallStoppers() {
+        clearBallStoppersAndSensor();
         //      coordinate
         float redX = (GameConstant.WINDOW_WIDTH.get() - 0.5f * GameConstant.CELL_SIZE.get());
         float blueX = (GameConstant.UI_WIDTH.get() + 0.5f * GameConstant.CELL_SIZE.get());
@@ -115,7 +116,11 @@ public class GameManager {
         }
 
         delta = delta * 12;
+        int velocityIterations = 6;
+        int positionIterations = 6;
         delta *= timeScale;
+        velocityIterations *= (int) timeScale;
+        positionIterations *= (int) timeScale;
         updateStopperLogic();
 
 /**
@@ -123,7 +128,7 @@ public class GameManager {
  *         6：速度迭代的次數，用於更準確地計算物體的速度
  *         2：位置迭代的次數，用於更準確地計算物體的位置
  */
-        world.step(delta, 5, 5);
+        world.step(delta, velocityIterations, positionIterations);
 
         for (GameComponents component : components.values()) {
             component.update(delta);
@@ -300,6 +305,7 @@ public class GameManager {
 
     public static void clearComponents() {
         for (GameComponents component : components.values()) {
+            component.dispose();
 
             Body body = component.getBody();
             if (body != null) {
@@ -307,6 +313,8 @@ public class GameManager {
             }
         }
         components.clear();
+
+
     }
 
 
@@ -526,13 +534,15 @@ public class GameManager {
     }
 
     public static void giveBallEnergy() {
-        List<Ball> balls = new ArrayList<>();
-        balls.addAll(redBalls);
-        balls.addAll(blueBalls);
 
-        for (Ball ball : balls) {
-            ball.getBallBody().applyLinearImpulse(new Vector2(0f, 20f), ball.getBallBody().getPosition(), true);
+        for (Ball ball : redBalls) {
+            ball.getBallBody().applyLinearImpulse(new Vector2(-1000f, 100f), ball.getBallBody().getPosition(), true);
         }
+        for (Ball ball : blueBalls) {
+            ball.getBallBody().applyLinearImpulse(new Vector2(1000f, 100f), ball.getBallBody().getPosition(), true);
+        }
+
+
     }
 
     public static void setSelectedComponent(String componentType) {

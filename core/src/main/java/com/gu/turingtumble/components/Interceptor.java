@@ -73,4 +73,11 @@ public class Interceptor implements GameComponents {
     public Body getBody() {
         return interceptorBody;
     }
+
+    @Override
+    public void dispose() {
+        if (interceptorSprite != null) {
+            interceptorSprite = null;
+        }
+    }
 }

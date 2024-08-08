@@ -2,6 +2,7 @@ package com.gu.turingtumble.levels;
 
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
+import com.gu.turingtumble.utils.GameState;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +33,11 @@ public class Level3 extends Level {
         GameManager.addComponent(0, 8);
         GameManager.addComponent(6, 10);
         GameManager.addComponent(8, 10);
+    }
+
+    @Override
+    public void setAllowedBallStopper() {
+        GameState.getInstance().setAllowedBallStopper(0);
     }
 
     @Override

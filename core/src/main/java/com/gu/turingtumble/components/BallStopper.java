@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Timer;
 import com.gu.turingtumble.utils.GameManager;
 
+import java.util.List;
+
 public class BallStopper {
     // Model
     private final Body stopperBody;
@@ -14,7 +16,7 @@ public class BallStopper {
     // Data
     public static final float RADIUS = 24f;
     // Functional
-    private boolean shouldResetBallPosition;
+//    private boolean shouldResetBallPosition;
     private Body capturedBall;
 
 
@@ -22,7 +24,7 @@ public class BallStopper {
         this.world = world;
         this.stopperBody = createBody(posX, posY);
         this.capturedBall = null;
-        this.shouldResetBallPosition = false;
+//        this.shouldResetBallPosition = false;
     }
 
     private Body createBody(float posX, float posY) {
@@ -31,13 +33,15 @@ public class BallStopper {
         def.type = BodyDef.BodyType.StaticBody;
         def.position.set(posX, posY);
         Body body = world.createBody(def);
+        def.allowSleep = false;
 
         CircleShape shape = new CircleShape();
         shape.setRadius(RADIUS);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.isSensor = false;
+        fixtureDef.friction = 10.0f;
+        fixtureDef.restitution = 0f;
         body.createFixture(fixtureDef);
         shape.dispose();
 
@@ -49,17 +53,15 @@ public class BallStopper {
     public void handleContact(Body ball) {
         if (capturedBall == null) {
             capturedBall = ball;
-            shouldResetBallPosition = true;
-//            setSensor(false);
+//            shouldResetBallPosition = true;
         }
     }
 
     public void update() {
-        if (shouldResetBallPosition && capturedBall != null) {
-            shouldResetBallPosition = false;
-            setSensor(false); // Set sensor to false to prevent other balls from entering
-            System.out.println("Ball captured");
-        }
+//        if (shouldResetBallPosition && capturedBall != null) {
+//            shouldResetBallPosition = false;
+//            System.out.println("Ball captured");
+//        }
 
         // Keep the captured ball at the stopper's position
         if (capturedBall != null && stopperBody != null) {
@@ -71,44 +73,47 @@ public class BallStopper {
 
     public void launchBall() {
         if (capturedBall != null) {
-            capturedBall.setLinearVelocity(new Vector2(0, -50f));
-//            setSensor(true); // Set sensor to true to allow the next ball to be captured
+            capturedBall.setLinearVelocity(new Vector2(0, -10f));
+            GameManager.giveBallEnergy();
             System.out.println("Ball launched from: " + stopperBody.getPosition());
             capturedBall = null;
-            GameManager.giveBallEnergy();
-
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    setSensor(true);
-                }
-            }, 0.01f); // 10毫秒延遲
-
+            wakeUpOtherBalls();
         }
     }
 
-    private void setSensor(boolean isSensor) {
-        for (Fixture fixture : stopperBody.getFixtureList()) {
-            fixture.setSensor(isSensor);
-        }
-        System.out.println("Setting stopper sensor to: " + isSensor);
-    }
+//    private void setSensor(boolean isSensor) {
+//        for (Fixture fixture : stopperBody.getFixtureList()) {
+//            fixture.setSensor(isSensor);
+//        }
+//        System.out.println("Setting stopper sensor to: " + isSensor);
+//    }
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(getColor());
+
+        // Draw outer border
+        shapeRenderer.setColor(Color.BLACK);
         Vector2 position = stopperBody.getPosition();
+        shapeRenderer.circle(position.x, position.y, RADIUS + 2); // Adjust border thickness
+
+        // Draw stopper
+        shapeRenderer.setColor(getColor());
         shapeRenderer.circle(position.x, position.y, RADIUS);
+
         shapeRenderer.end();
     }
 
     private Color getColor() {
-        if (capturedBall != null) {
-            return Color.YELLOW;
+        int allowedStopper = GameManager.getGameState().getAllowedBallStopper();
+            if (allowedStopper == 1 && this == GameManager.getRedBallStopper()) {
+            return Color.RED; // Highlight red stopper if allowed
+        } else if (allowedStopper == 0 && this == GameManager.getBlueBallStopper()) {
+            return Color.BLUE; // Highlight blue stopper if allowed
         } else {
-            return Color.GREEN;
+            return Color.BLACK;
         }
     }
+
 
     public Body getBody() {
         return stopperBody;
@@ -116,8 +121,18 @@ public class BallStopper {
 
     public void reset() {
         capturedBall = null;
-        shouldResetBallPosition = false;
-        setSensor(false);
+//        shouldResetBallPosition = false;
+//        setSensor(false);
+    }
+
+
+    private void wakeUpOtherBalls() {
+        for (Ball b : GameManager.getBlueBalls()) {
+            b.wakeUp();
+        }
+        for (Ball b : GameManager.getRedBalls()) {
+            b.wakeUp();
+        }
     }
 
 

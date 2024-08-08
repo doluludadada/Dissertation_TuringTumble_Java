@@ -26,8 +26,8 @@ public class Ball {
         bd.type = BodyDef.BodyType.DynamicBody;
         bd.position.set(x, y);
         ballBody = world.createBody(bd);
-
-        bd.bullet = true;
+        bd.allowSleep = true;
+        bd.bullet = false;
 
         CircleShape shape = new CircleShape();
         shape.setRadius(RADIUS);
@@ -35,8 +35,8 @@ public class Ball {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 0.01f;
-        fixtureDef.friction = 500f;
+        fixtureDef.density =0.5f;
+        fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
 
         ballBody.createFixture(fixtureDef);
@@ -70,4 +70,13 @@ public class Ball {
     public Color getBallColour() {
         return ballColour;
     }
+
+    public void sleep() {
+        ballBody.setAwake(false);
+    }
+
+    public void wakeUp() {
+        ballBody.setAwake(true);
+    }
+
 }

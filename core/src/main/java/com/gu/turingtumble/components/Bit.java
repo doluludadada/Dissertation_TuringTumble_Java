@@ -19,6 +19,8 @@ import com.gu.turingtumble.utils.GameManager;
  * TODO:這個零件會有鐘擺的效果根據球撞擊的方向會傾斜正負30
  */
 public class Bit implements GameComponents {
+
+
     // MODEL
     private Body bitBody;
     private RevoluteJoint revoluteJoint;
@@ -96,13 +98,19 @@ public class Bit implements GameComponents {
 
     @Override
     public void update(float delta) {
-
+        if (bitTexture != null) {
+            bitTexture.dispose();
+            bitTexture = null;
+        }
     }
 
     @Override
     public Body getBody() {
         return bitBody;
     }
+    @Override
+    public void dispose() {
 
+    }
 
 }

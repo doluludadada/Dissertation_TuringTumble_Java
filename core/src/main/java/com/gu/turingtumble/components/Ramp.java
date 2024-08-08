@@ -31,7 +31,7 @@ public class Ramp implements GameComponents {
     //    Data
     protected static final float RAMP_WIDTH = 60f;
     protected static final float RAMP_HEIGHT = 60f;
-    protected static final float ROTATION = (float) Math.toRadians(75);
+    protected static final float ROTATION = (float) Math.toRadians(80);
     //    Functional
     protected Set<Body> contactBodies = new HashSet<>();
     protected boolean isScheduledToReset = false;
@@ -48,8 +48,8 @@ public class Ramp implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 10f;
-        fd.friction = 100f;
+        fd.density = 0.5f;
+        fd.friction = 0f;
         fd.restitution = 0f;
 //        fd.isSensor = true;
 
@@ -109,6 +109,14 @@ public class Ramp implements GameComponents {
         return rampBody;
     }
 
+    @Override
+    public void dispose() {
+        if (rampTexture != null) {
+            rampTexture.dispose();
+            rampTexture = null;
+        }
+    }
+
 
     public void beginContact(Body body) {
         contactBodies.add(body);
@@ -149,6 +157,7 @@ public class Ramp implements GameComponents {
             }
         }, 2f); // 延遲1秒後檢查是否需要重設
     }
+
 }
 
 
