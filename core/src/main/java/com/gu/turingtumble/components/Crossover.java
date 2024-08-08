@@ -52,7 +52,7 @@ public class Crossover implements GameComponents {
 
     private void createSprite() {
 
-        Texture crossoverTexture = new Texture(Gdx.files.internal("assets/Orange.png"));
+        Texture crossoverTexture = new Texture(Gdx.files.internal("Orange.png"));
         crossoverTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         crossoverSprite = new Sprite(crossoverTexture);

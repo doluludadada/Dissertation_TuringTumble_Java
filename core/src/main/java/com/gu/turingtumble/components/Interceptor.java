@@ -48,7 +48,7 @@ public class Interceptor implements GameComponents {
     }
 
     private void createSprite() {
-        Texture crossoverTexture = new Texture(Gdx.files.internal("assets/black.png"));
+        Texture crossoverTexture = new Texture(Gdx.files.internal("black.png"));
         crossoverTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         interceptorSprite = new Sprite(crossoverTexture);

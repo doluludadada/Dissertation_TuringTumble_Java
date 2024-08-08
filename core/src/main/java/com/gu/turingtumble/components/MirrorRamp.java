@@ -55,7 +55,7 @@ public class MirrorRamp extends Ramp implements GameComponents {
 
     @Override
     protected void createSprite() {
-        rampTexture = new Texture(Gdx.files.internal("assets/Green2.png"));
+        rampTexture = new Texture(Gdx.files.internal("Green2.png"));
         rampTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         rampSprite = new Sprite(rampTexture);

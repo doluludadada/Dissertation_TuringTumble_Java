@@ -7,6 +7,9 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.gu.turingtumble.MainGame;
 import com.gu.turingtumble.utils.GameManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Class representing a Bottom Sensor in the game.
  * The sensor is a rectangular area that detects ball contacts
@@ -17,6 +20,7 @@ public class BottomSensor {
     private final World world;
     private final float width = 85f;  // Width of the sensor
     private final float height = 40f; // Height of the sensor
+    private final Set<Body> contactedBalls; // To track balls that have contacted the sensor
 
     /**
      * Constructor for BottomSensor.
@@ -28,6 +32,7 @@ public class BottomSensor {
     public BottomSensor(float posX, float posY, World world) {
         this.world = world;
         this.sensorBody = createBody(posX, posY);
+        this.contactedBalls = new HashSet<>();
     }
 
     /**
@@ -42,6 +47,7 @@ public class BottomSensor {
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(posX, posY);
         Body body = world.createBody(bodyDef);
+        bodyDef.allowSleep = false;
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
@@ -49,6 +55,9 @@ public class BottomSensor {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.isSensor = true;
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 0f;
+        fixtureDef.restitution = 0f;
         body.createFixture(fixtureDef);
         shape.dispose();
 
@@ -64,7 +73,9 @@ public class BottomSensor {
      * @param isEntering True if the ball is entering the sensor, false if leaving
      */
     public void handleContact(Body ball, boolean isEntering) {
-        if (!isEntering) return;
+        if (!isEntering || contactedBalls.contains(ball)) return;
+
+        contactedBalls.add(ball);
 
         Ball ballData = (Ball) ball.getUserData();
         if (ballData == null) return;
@@ -84,26 +95,24 @@ public class BottomSensor {
         MainGame.getUiManager().updateUI();
     }
 
-
-
     /**
      * Draws the sensor on the screen.
      *
      * @param shapeRenderer The ShapeRenderer used for drawing
      */
     public void draw(ShapeRenderer shapeRenderer) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         Vector2 position = sensorBody.getPosition();
         float halfWidth = width / 2;
         float halfHeight = height / 2;
 
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         // Draw blue half
-        shapeRenderer.setColor(Color.BLUE);
+        shapeRenderer.setColor(new Color(0, 0, 1, 0.2f));
         shapeRenderer.rect(position.x - halfWidth, position.y - halfHeight, halfWidth, height);
 
         // Draw red half
-        shapeRenderer.setColor(Color.RED);
+        shapeRenderer.setColor(new Color(1, 0, 0, 0.2f));
         shapeRenderer.rect(position.x, position.y - halfHeight, halfWidth, height);
 
         // Draw middle black line

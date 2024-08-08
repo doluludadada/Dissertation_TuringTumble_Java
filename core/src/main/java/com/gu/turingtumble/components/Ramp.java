@@ -60,7 +60,7 @@ public class Ramp implements GameComponents {
     }
 
     protected void createSprite() {
-        rampTexture = new Texture(Gdx.files.internal("assets/Green.png"));
+        rampTexture = new Texture(Gdx.files.internal("Green.png"));
         rampTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         rampSprite = new Sprite(rampTexture);

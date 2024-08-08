@@ -55,7 +55,7 @@ public class Bit implements GameComponents {
     }
 
     private void createSprite() {
-        bitTexture = new Texture(Gdx.files.internal("assets/Blue.png"));
+        bitTexture = new Texture(Gdx.files.internal("Blue.png"));
         bitTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         bitSprite = new Sprite(bitTexture);
         bitSprite.setSize(BIT_WIDTH, BIT_WIDTH * bitSprite.getHeight() / bitSprite.getWidth());

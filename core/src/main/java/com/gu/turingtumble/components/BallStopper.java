@@ -4,10 +4,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Timer;
 import com.gu.turingtumble.utils.GameManager;
 
-import java.util.List;
+
 
 public class BallStopper {
     // Model
@@ -16,7 +15,6 @@ public class BallStopper {
     // Data
     public static final float RADIUS = 24f;
     // Functional
-//    private boolean shouldResetBallPosition;
     private Body capturedBall;
 
 
@@ -24,7 +22,6 @@ public class BallStopper {
         this.world = world;
         this.stopperBody = createBody(posX, posY);
         this.capturedBall = null;
-//        this.shouldResetBallPosition = false;
     }
 
     private Body createBody(float posX, float posY) {
@@ -53,16 +50,10 @@ public class BallStopper {
     public void handleContact(Body ball) {
         if (capturedBall == null) {
             capturedBall = ball;
-//            shouldResetBallPosition = true;
         }
     }
 
     public void update() {
-//        if (shouldResetBallPosition && capturedBall != null) {
-//            shouldResetBallPosition = false;
-//            System.out.println("Ball captured");
-//        }
-
         // Keep the captured ball at the stopper's position
         if (capturedBall != null && stopperBody != null) {
             capturedBall.setTransform(stopperBody.getPosition(), capturedBall.getAngle());
@@ -80,13 +71,6 @@ public class BallStopper {
             wakeUpOtherBalls();
         }
     }
-
-//    private void setSensor(boolean isSensor) {
-//        for (Fixture fixture : stopperBody.getFixtureList()) {
-//            fixture.setSensor(isSensor);
-//        }
-//        System.out.println("Setting stopper sensor to: " + isSensor);
-//    }
 
     public void draw(ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -121,8 +105,6 @@ public class BallStopper {
 
     public void reset() {
         capturedBall = null;
-//        shouldResetBallPosition = false;
-//        setSensor(false);
     }
 
 

@@ -11,7 +11,7 @@ public class ComponentFactory {
 
     // 0. Create a loader for the file saved from the editor.
     static {
-        loader = new BodyEditorLoader(Gdx.files.internal("assets/Green.json"));
+        loader = new BodyEditorLoader(Gdx.files.internal("Green.json"));
     }
 
     public static GameComponents createComponent(String type, float x, float y) {

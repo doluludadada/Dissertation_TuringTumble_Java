@@ -230,14 +230,14 @@ public class GameUI {
         String texturePath;
         if (isActive) {
             if (color == Color.BLUE) {
-                texturePath = "blue_ball.png";
+                texturePath = "blue_Ball.png";
             } else if (color == Color.RED) {
-                texturePath = "red_ball.png";
+                texturePath = "red_Ball.png";
             } else {
-                texturePath = "gray_ball.png";
+                texturePath = "gray_Ball.png";
             }
         } else {
-            texturePath = "gray_ball.png";
+            texturePath = "gray_Ball.png";
         }
         Texture ballTexture = new Texture(Gdx.files.internal(texturePath));
         return new VisImage(ballTexture);
