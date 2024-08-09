@@ -83,6 +83,9 @@ public class Crossover implements GameComponents {
     public void dispose() {
         if (crossoverSprite != null) {
             crossoverSprite = null;
+        }else if(crossoverBody != null) {
+            crossoverBody.getWorld().destroyBody(crossoverBody);
+            crossoverBody = null;
         }
     }
 }

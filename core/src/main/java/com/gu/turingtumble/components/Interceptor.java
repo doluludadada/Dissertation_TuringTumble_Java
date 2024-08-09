@@ -79,5 +79,9 @@ public class Interceptor implements GameComponents {
         if (interceptorSprite != null) {
             interceptorSprite = null;
         }
+        if (interceptorBody != null) {
+            interceptorBody.getWorld().destroyBody(interceptorBody);
+            interceptorBody = null;
+        }
     }
 }

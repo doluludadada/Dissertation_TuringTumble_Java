@@ -301,45 +301,6 @@ public class GameManager {
         return body;
     }
 
-    public static void clearComponents() {
-        for (GameComponents component : components.values()) {
-            component.dispose();
-
-            Body body = component.getBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-        }
-        components.clear();
-
-
-    }
-
-
-    public static void clearBallStoppersAndSensor() {
-        if (redBallStopper != null) {
-            Body body = redBallStopper.getBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-            redBallStopper = null;
-        }
-        if (blueBallStopper != null) {
-            Body body = blueBallStopper.getBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-            blueBallStopper = null;
-        }
-        if (bottomSensor != null) {
-            Body body = bottomSensor.getBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-            bottomSensor = null;
-        }
-    }
-
 
     public static boolean switchComponentFunction(Vector2 position) {
         for (Map.Entry<Vector2, GameComponents> entry : components.entrySet()) {
@@ -402,19 +363,57 @@ public class GameManager {
         return slotBodies.get(position);
     }
 
+
+
+
+    /*
+
+
+
+
+
+
+     ******CLEAN METHODS******
+
+
+
+
+
+     */
+
+
+    public static void clearComponents() {
+        components.values().forEach(GameComponents::dispose);
+        components.clear();
+    }
+
+    public static void clearBallStoppersAndSensor() {
+        if (redBallStopper != null) {
+            Body body = redBallStopper.getBody();
+            if (body != null) {
+                world.destroyBody(body);
+            }
+            redBallStopper = null;
+        }
+        if (blueBallStopper != null) {
+            Body body = blueBallStopper.getBody();
+            if (body != null) {
+                world.destroyBody(body);
+            }
+            blueBallStopper = null;
+        }
+        if (bottomSensor != null) {
+            Body body = bottomSensor.getBody();
+            if (body != null) {
+                world.destroyBody(body);
+            }
+            bottomSensor = null;
+        }
+    }
+
     public static void clearBalls() {
-        for (Ball ball : redBalls) {
-            Body body = ball.getBallBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-        }
-        for (Ball ball : blueBalls) {
-            Body body = ball.getBallBody();
-            if (body != null) {
-                world.destroyBody(body);
-            }
-        }
+        redBalls.forEach(Ball::dispose);
+        blueBalls.forEach(Ball::dispose);
         redBalls.clear();
         blueBalls.clear();
     }

@@ -15,8 +15,6 @@ import com.gu.turingtumble.utils.GameManager;
 
 /**
  * Game component, Bit
- * TODO:根據球撞到的上方三角形來判斷這個零件會左移還是右移
- * TODO:這個零件會有鐘擺的效果根據球撞擊的方向會傾斜正負30
  */
 public class Bit implements GameComponents {
 
@@ -81,9 +79,7 @@ public class Bit implements GameComponents {
         jointDf.motorSpeed = 1.0f;  //Speed
         jointDf.maxMotorTorque = 10.0f;
 
-
         revoluteJoint = (RevoluteJoint) world.createJoint(jointDf);
-
     }
 
 
@@ -108,9 +104,22 @@ public class Bit implements GameComponents {
     public Body getBody() {
         return bitBody;
     }
+
     @Override
     public void dispose() {
-
+        if (revoluteJoint != null) {
+            revoluteJoint.getBodyB().getWorld().destroyJoint(revoluteJoint);
+        }
+        if (bitTexture != null) {
+            bitTexture.dispose();
+            bitTexture = null;
+        }
+        if (bitSprite != null) {
+            bitSprite = null;
+        }
+        if (bitBody != null) {
+            bitBody.getWorld().destroyBody(bitBody);
+        }
     }
 
 }

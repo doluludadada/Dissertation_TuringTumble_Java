@@ -35,7 +35,7 @@ public class Ball {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density =0.5f;
+        fixtureDef.density = 0.5f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
 
@@ -79,4 +79,9 @@ public class Ball {
         ballBody.setAwake(true);
     }
 
+    public void dispose() {
+        if (ballBody != null) {
+            ballBody.getWorld().destroyBody(ballBody);
+        }
+    }
 }

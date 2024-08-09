@@ -109,14 +109,6 @@ public class Ramp implements GameComponents {
         return rampBody;
     }
 
-    @Override
-    public void dispose() {
-        if (rampTexture != null) {
-            rampTexture.dispose();
-            rampTexture = null;
-        }
-    }
-
 
     public void beginContact(Body body) {
         contactBodies.add(body);
@@ -136,13 +128,30 @@ public class Ramp implements GameComponents {
     }
 
     protected void rotateRamp() {
-        revoluteJoint.setLimits(0, ROTATION);
+        if (revoluteJoint != null) {
+            float lowerLimit = 0;
+            float upperLimit = ROTATION;
+            if (!Float.isNaN(lowerLimit) && !Float.isNaN(upperLimit) && lowerLimit <= upperLimit) {
+                revoluteJoint.setLimits(lowerLimit, upperLimit);
+            } else {
+                System.err.println("Invalid limits for revolute joint: " + lowerLimit + ", " + upperLimit);
+            }
+        }
     }
 
     protected void resetRamp() {
-        revoluteJoint.setLimits(0, (float) Math.toRadians(25));
-        isScheduledToReset = false;
+        if (revoluteJoint != null) {
+            float lowerLimit = 0;
+            float upperLimit = (float) Math.toRadians(25);
+            if (!Float.isNaN(lowerLimit) && !Float.isNaN(upperLimit) && lowerLimit <= upperLimit) {
+                revoluteJoint.setLimits(lowerLimit, upperLimit);
+            } else {
+                System.err.println("Invalid limits for revolute joint: " + lowerLimit + ", " + upperLimit);
+            }
+            isScheduledToReset = false;
+        }
     }
+
 
     protected void scheduleResetRamp() {
         isScheduledToReset = true;
@@ -155,6 +164,25 @@ public class Ramp implements GameComponents {
                 }
             }
         }, 2f);
+    }
+
+    @Override
+    public void dispose() {
+        if (revoluteJoint != null) {
+            revoluteJoint.getBodyB().getWorld().destroyJoint(revoluteJoint);
+            revoluteJoint = null;
+        }
+        if (rampTexture != null) {
+            rampTexture.dispose();
+            rampTexture = null;
+        }
+        if (rampBody != null) {
+            rampBody.getWorld().destroyBody(rampBody);
+            rampBody = null;
+        }
+        if (rampSprite != null) {
+            rampSprite = null;
+        }
     }
 
 }
