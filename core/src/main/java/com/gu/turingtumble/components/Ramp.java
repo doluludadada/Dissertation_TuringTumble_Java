@@ -65,7 +65,8 @@ public class Ramp implements GameComponents {
 
         rampSprite = new Sprite(rampTexture);
         rampSprite.setSize(RAMP_WIDTH, RAMP_WIDTH * rampSprite.getHeight() / rampSprite.getWidth());
-        rampSprite.setOriginCenter();
+//        rampSprite.setOriginCenter();
+        rampSprite.setOrigin(rampModelOrigin.x, rampModelOrigin.y);
     }
 
     protected void createRevoluteJoint(World world, Body slotBody) {

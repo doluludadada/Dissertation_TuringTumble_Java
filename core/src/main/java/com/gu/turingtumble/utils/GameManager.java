@@ -29,6 +29,9 @@ public class GameManager {
     private static GameBoard gameBoard;
     private static GameState gameState;
 
+    private static int redBallNum = 8;
+    private static int blueBallNum = 8;
+
 
     //    FUNCTIONAL
     private static float timeScale = 1.0f;
@@ -86,10 +89,10 @@ public class GameManager {
         float blueStartX = centreX - GameConstant.CELL_SIZE.get();
 
         //      Set the balls
-        for (int i = 0; i < GameConstant.RED_BALL_COUNT.get(); i++) {
+        for (int i = 0; i < redBallNum; i++) {
             redBalls.add(new Ball(world, Color.RED, redStartX, startY + i));
         }
-        for (int i = 0; i < GameConstant.BLUE_BALL_COUNT.get(); i++) {
+        for (int i = 0; i < blueBallNum; i++) {
             blueBalls.add(new Ball(world, Color.BLUE, blueStartX, startY + i));
         }
     }
@@ -574,4 +577,19 @@ public class GameManager {
         return slotPositions;
     }
 
+    public static int getRedBallNum() {
+        return redBallNum;
+    }
+
+    public static void setRedBallNum(int redBallNum) {
+        GameManager.redBallNum = redBallNum;
+    }
+
+    public static int getBlueBallNum() {
+        return blueBallNum;
+    }
+
+    public static void setBlueBallNum(int blueBallNum) {
+        GameManager.blueBallNum = blueBallNum;
+    }
 }

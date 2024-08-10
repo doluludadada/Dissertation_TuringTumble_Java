@@ -7,33 +7,30 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Level7 extends Level {
-    public Level7() {
+public class Level10 extends Level{
+    public Level10() {
         super();
         Map<String, Integer> limits = new HashMap<>();
-        limits.put("Ramp", 6);
+        limits.put("Ramp",22);
         setComponentLimits(limits);
     }
 
     @Override
     public void setAllowedBallStopper() {
-        GameState.getInstance().setAllowedBallStopper(0);
+        GameManager.getGameState().setAllowedBallStopper(0);
     }
 
     @Override
     public void basicComponent() {
+        GameManager.setSelectedComponent("Bit");
+        GameManager.addComponent(0, 4);
+        GameManager.addComponent(0, 8);
         GameManager.setSelectedComponent("Crossover");
-        GameManager.addComponent(3, 4);
-        GameManager.addComponent(3, 6);
-        GameManager.addComponent(5, 1);
-        GameManager.addComponent(6, 5);
-        GameManager.addComponent(8, 3);
-        GameManager.addComponent(9, 4);
-
+        GameManager.addComponent(2, 6);
     }
 
     @Override
     public void setVictoryCondition() {
-        GameManager.getGameState().setRequireGoal(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
+        GameManager.getGameState().setRequireGoal(Arrays.asList(0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1));
     }
 }

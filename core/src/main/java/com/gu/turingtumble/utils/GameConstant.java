@@ -38,4 +38,7 @@ public enum GameConstant {
         return doubleValue;
     }
 
+    public void set(int value) {
+    }
+
 }

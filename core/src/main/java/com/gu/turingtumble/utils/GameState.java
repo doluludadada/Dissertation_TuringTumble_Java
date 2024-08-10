@@ -8,6 +8,8 @@ public class GameState {
     private List<Integer> currentState;
     private int allowedBallStopper; // -1: both sides can be used, 0: only use left side, 1: only use right side
 
+
+
     private GameState() {
         this.requireGoal = new ArrayList<>();
         this.currentState = new ArrayList<>();
@@ -74,6 +76,8 @@ public class GameState {
     public void setAllowedBallStopper(int allowedNum) {
         this.allowedBallStopper = allowedNum;
     }
+
+
 
     public void reset() {
         this.requireGoal.clear();

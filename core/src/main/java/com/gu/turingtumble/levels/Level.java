@@ -12,6 +12,7 @@ public abstract class Level {
     private static final Map<String, Integer> COMPONENT_LIMITS = new HashMap<>();
     private final Map<String, Integer> currentComponentCounts = new HashMap<>();
 
+
     protected Level() {
         resetComponentCounts();
     }
@@ -21,7 +22,7 @@ public abstract class Level {
         COMPONENT_LIMITS.putAll(limits);
     }
 
-    private void resetComponentCounts() {
+    protected void resetComponentCounts() {
         for (String componentType : COMPONENT_LIMITS.keySet()) {
             currentComponentCounts.put(componentType, 0);
         }
@@ -29,21 +30,22 @@ public abstract class Level {
 
     public void initialise() {
         System.out.println("level initialized");
-//        GameManager.initialiseBalls();
         GameState.getInstance().reset();
+        GameManager.setBlueBallNum(8);
+        GameManager.setRedBallNum(8);
         setVictoryCondition();
         resetComponentCounts();
         basicComponent();
         setAllowedBallStopper();
     }
 
-    public abstract void setAllowedBallStopper();
+    protected abstract void setAllowedBallStopper();
 
-    public void reset(MainGame game){
+    protected void reset(MainGame game){
         GameManager.resetLevel();
     }
 
-    public abstract void basicComponent();
+    protected abstract void basicComponent();
 
     public boolean isComplete() {
         return GameState.getInstance().isComplete();
@@ -61,7 +63,7 @@ public abstract class Level {
         currentComponentCounts.put(componentType, currentComponentCounts.getOrDefault(componentType, 0) + 1);
     }
 
-    public abstract void setVictoryCondition();
+    protected abstract void setVictoryCondition();
 
     public void dispose() {
         GameManager.clearComponents();

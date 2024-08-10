@@ -22,7 +22,6 @@ public class LevelManager {
         if (GameConstant.TEST_MODE.get() == 1) {
             unlockAllLevels();
         }
-
     }
 
     public static void loadLevel(int levelNumber) {
@@ -41,6 +40,10 @@ public class LevelManager {
             case 4 -> new Level4();
             case 5 -> new Level5();
             case 6 -> new Level6();
+            case 7 -> new Level7();
+            case 8 -> new Level8();
+            case 9 -> new Level9();
+            case 10 -> new Level10();
             default -> throw new IllegalArgumentException("Unknown level: " + levelNumber);
         };
 
@@ -75,7 +78,7 @@ public class LevelManager {
     }
 
     private static void unlockAllLevels() {
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= 10; i++) {
             unlockedLevels.add(i);
         }
     }
