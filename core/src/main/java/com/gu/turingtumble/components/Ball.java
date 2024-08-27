@@ -36,7 +36,7 @@ public class Ball {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0.5f;
-        fixtureDef.friction = 0f;
+        fixtureDef.friction = 100f;
         fixtureDef.restitution = 0f;
 
         ballBody.createFixture(fixtureDef);

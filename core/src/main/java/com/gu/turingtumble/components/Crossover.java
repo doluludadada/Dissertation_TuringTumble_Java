@@ -37,9 +37,9 @@ public class Crossover implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 1f;
-        fd.friction = 0.5f;
-        fd.restitution = 0.3f;
+        fd.density = 0.1f;
+        fd.friction = 0.0f;
+        fd.restitution = 0.0f;
 
         // 3. Create a Body
         crossoverBody = world.createBody(bd);

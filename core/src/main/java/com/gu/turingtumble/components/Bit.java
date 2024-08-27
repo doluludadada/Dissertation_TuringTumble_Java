@@ -27,8 +27,8 @@ public class Bit implements GameComponents {
     private Sprite bitSprite;
     private Texture bitTexture;
     // Constants
-    private static final float BIT_WIDTH = 65f;
-    private static final float BIT_HEIGHT = 65f;
+    private static final float BIT_WIDTH = 70f;
+    private static final float BIT_HEIGHT = 70f;
 
 
     public Bit(float x, float y, World world, Body slotBody, BodyEditorLoader loader) {
@@ -42,9 +42,9 @@ public class Bit implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 1.5f;
+        fd.density = 1f;
         fd.friction = 0f;
-        fd.restitution = 0.0f;
+        fd.restitution = 0f;
 
         // 3. Create the body fixture automatically by using the loader.
         loader.attachFixture(bitBody, "Blue", fd, BIT_HEIGHT);
@@ -65,10 +65,10 @@ public class Bit implements GameComponents {
         RevoluteJointDef jointDf = new RevoluteJointDef();
         // Create A（fixed point）
         jointDf.bodyA = slotBody;
-//        jointDf.localAnchorA.set(slotBody.getPosition().x, slotBody.getPosition().y);
+        jointDf.localAnchorA.set(slotBody.getPosition().x, slotBody.getPosition().y);
         // Create B（bit body）
         jointDf.bodyB = bitBody;
-//        jointDf.localAnchorB.set(bitBody.getPosition().x, bitBody.getPosition().y);
+        jointDf.localAnchorB.set(bitBody.getPosition().x, bitBody.getPosition().y);
 
         jointDf.localAnchorA.set(0, 0);
         jointDf.localAnchorB.set(0, 0);
@@ -76,8 +76,8 @@ public class Bit implements GameComponents {
         // Create Joint
         jointDf.initialize(slotBody, bitBody, slotBody.getPosition());
         // Set Date
-        jointDf.lowerAngle = -0.35f * (float) Math.PI;
-        jointDf.upperAngle = 0.35f * (float) Math.PI;
+        jointDf.lowerAngle = -0.29f * (float) Math.PI;
+        jointDf.upperAngle = 0.29f * (float) Math.PI;
         jointDf.enableLimit = true;
         //Motor
         jointDf.enableMotor = false;
