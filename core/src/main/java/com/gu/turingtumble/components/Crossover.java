@@ -37,7 +37,7 @@ public class Crossover implements GameComponents {
 
         // 2. Create a FixtureDef
         FixtureDef fd = new FixtureDef();
-        fd.density = 0.1f;
+        fd.density = 0.01f;
         fd.friction = 0.0f;
         fd.restitution = 0.0f;
 
